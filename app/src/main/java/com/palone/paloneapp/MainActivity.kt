@@ -21,6 +21,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
                     Text(text = "testt pull requesttttt")
+                    Text(text = "wazzap")
                 }
             }
         }

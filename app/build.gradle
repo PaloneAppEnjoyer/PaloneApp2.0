@@ -5,14 +5,7 @@ plugins {
 }
 
 android {
-    signingConfigs {
-        debug {
-            storeFile file('C:\\Android Studio\\palone.jks')
-            storePassword compose_version
-            keyAlias compose_version
-            keyPassword compose_version
-        }
-    }
+
     compileSdk 33
 
     defaultConfig {

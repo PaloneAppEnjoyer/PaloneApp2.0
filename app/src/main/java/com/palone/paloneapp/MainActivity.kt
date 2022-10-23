@@ -10,7 +10,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
-import com.palone.paloneapp.data.network.RetrofitInstance
+import com.palone.paloneapp.domain.UseCases
 import com.palone.paloneapp.ui.MainViewModel
 import com.palone.paloneapp.ui.PaloneApp
 import com.palone.paloneapp.ui.theme.PaloneAppTheme
@@ -21,9 +21,8 @@ class MainActivity : ComponentActivity() {
         val viewModel by viewModels<MainViewModel>()
 
         lifecycleScope.launchWhenCreated {
-            RetrofitInstance.setBody("""{"__args":[null,{"date":"2022-10-20","mode":"classes"}],"__gsh":"00000000"}""")
             Log.i(
-                "TEEEESSSTTTT", RetrofitInstance.api.getSubstitutions().r
+                "TEEEESSSTTTT", UseCases().getSubstitutionsDataWithDayOffset(-5).toString()
             )
         } // TODO move it to domain layer (prepare function to change selected day), make a class out of it, send it to viewmodel, make a class HomeScreenUiState, pass there any important info, send it to Ui
         setContent {

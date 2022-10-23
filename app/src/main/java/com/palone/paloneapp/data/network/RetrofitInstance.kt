@@ -14,7 +14,7 @@ object RetrofitInstance {
         _body = body
     }
 
-    val client = OkHttpClient.Builder().apply {
+    private val client = OkHttpClient.Builder().apply {
         logging.level = HttpLoggingInterceptor.Level.BODY
         addInterceptor(Interceptor { chain ->
             val builder = chain.request().newBuilder()

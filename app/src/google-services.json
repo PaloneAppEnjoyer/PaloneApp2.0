@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "96949788660",
+    "project_id": "paloneapp",
+    "storage_bucket": "paloneapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:96949788660:android:942f43c2d8f294602da3a1",
+        "android_client_info": {
+          "package_name": "com.palone.paloneapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "96949788660-lpuc8tocm9fl2clv88v3m2br4pg1ld4n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA9CCKKA54zXGFTVAbRcnDZxUtKOedz2Bk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "96949788660-lpuc8tocm9fl2clv88v3m2br4pg1ld4n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

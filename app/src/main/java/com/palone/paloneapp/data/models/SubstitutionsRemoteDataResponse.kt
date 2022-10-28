@@ -1,5 +1,5 @@
 package com.palone.paloneapp.data.models
 
-data class SubstitutionsResponse(
+data class SubstitutionsRemoteDataResponse(
     val r: String
 )

@@ -10,25 +10,45 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
+import java.util.*
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _uiState = MutableStateFlow(HomeScreenUiState())
     val uiState: StateFlow<HomeScreenUiState> = _uiState.asStateFlow()
 
-    fun refreshSubstitutionsWithDayOffset(day: Int) {
+    private val _cal = MutableStateFlow(Calendar.getInstance())
+    val cal: StateFlow<Calendar> = _cal.asStateFlow()
+
+    private val _selectedLocalDate = MutableStateFlow(
+        LocalDate(
+            year = _cal.value.get(Calendar.YEAR),
+            monthNumber = _cal.value.get(Calendar.MONTH) + 1,
+            dayOfMonth = _cal.value.get(Calendar.DAY_OF_MONTH)
+        )
+    )
+    val selectedLocalDate: StateFlow<LocalDate> = _selectedLocalDate.asStateFlow()
+
+    fun updateSelectedLocalDate(date: LocalDate) {
+        _selectedLocalDate.value = date
+    }
+
+    fun refreshSubstitutionsDataWithLocalDate(localDate: LocalDate) {
         _uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch {
             _uiState.update { currentState ->
                 currentState.copy(
                     isLoading = false,
-                    substitutionsList = UseCases().getSubstitutionsDataWithDayOffset(day)
+                    substitutionsList = UseCases().getSubstitutionsDataWithLocalDate(localDate)
                 )
             }
         }
     }
 
     init {
-        refreshSubstitutionsWithDayOffset(1)
+        refreshSubstitutionsDataWithLocalDate(
+            _selectedLocalDate.value
+        )
     }
 }

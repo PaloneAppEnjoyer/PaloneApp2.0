@@ -1,24 +1,21 @@
 package com.palone.paloneapp.data
 
+import android.util.Log
 import com.palone.paloneapp.data.models.SubstitutionData
+import com.palone.paloneapp.data.models.SubstitutionDataEntries
 import com.palone.paloneapp.data.network.RetrofitInstance
-import java.text.SimpleDateFormat
-import java.util.*
+import kotlinx.datetime.LocalDate
 
 class SubstitutionsDataProvider {
-    suspend fun getRemoteData(calendar: Calendar): List<SubstitutionData> {
+    suspend fun getRemoteData(localDate: LocalDate): List<SubstitutionData> {
 
         RetrofitInstance.setBody(
-            """{"__args":[null,{"date":"${
-                SimpleDateFormat(
-                    "yyyy-MM-dd",
-                    Locale.getDefault()
-                ).format(calendar.time)
-            }","mode":"classes"}],"__gsh":"00000000"}"""
+            """{"__args":[null,{"date":"${localDate.year}-${if ((localDate.monthNumber).toString().length == 1) "0" + localDate.monthNumber else localDate.monthNumber}-${if (localDate.dayOfMonth.toString().length == 1) "0" + localDate.dayOfMonth else localDate.dayOfMonth}","mode":"classes"}],"__gsh":"00000000"}"""//"YYYY-MM-dd"
         )
         val rawData = RetrofitInstance.api.getSubstitutions().r
         return getSubstitutionsFromHtml(rawData = rawData)
     }
+
 
     private fun getSubstitutionsFromHtml(rawData: String?): List<SubstitutionData> {
         var string = rawData
@@ -289,11 +286,45 @@ class SubstitutionsDataProvider {
                 pickedClass = pickedClass.replace("{", "")
                 pickedClass = pickedClass.replace("}", "")
                 pickedClass = pickedClass.replace(" ", "")
+                val list = mutableListOf<SubstitutionDataEntries>()
+                for (i in 0 until description.size) {
+                    val listOfDescription = listOf(
+                        "(.* \\n)|(.* {3})".toRegex().find(
+                            description[i]
+                        )?.value?.replace("\n", ""),
+                        description[i].replace(
+                            "${
+                                "(.* \\n)|(.* {3})".toRegex().find(
+                                    description[i]
+                                )?.value
+                            }", ""
+                        ).replace(
+                            "${
+                                "(,\\nZmień salę lekcyjną: .* ➔ .*)|(, Anulowano)".toRegex().find(
+                                    description[i]
+                                )?.value
+                            }", ""
+                        ).replace("\n", ""),
+                        "(Zmień salę lekcyjną: .* ➔ .*)|(Anulowano)".toRegex().find(
+                            description[i]
+                        )?.value?.replace("\n", "")
+                    )
+                    list.add(
+                        SubstitutionDataEntries(
+                            lessons[0],
+                            listOfDescription[0],
+                            listOfDescription[1],
+                            listOfDescription[2]
+                        )
+                    )
+                    Log.i("", "$listOfDescription")
+
+                }
+//                Log.i("mapka","$lessonToDescription")
                 result.add(
                     SubstitutionData(
                         className = pickedClass,
-                        lesson = lessons,
-                        description = description
+                        entries = list
                     )
                 )
             }

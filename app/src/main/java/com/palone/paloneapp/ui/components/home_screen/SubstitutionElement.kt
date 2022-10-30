@@ -24,57 +24,55 @@ fun SubstitutionElement(substitutionData: SubstitutionData) {
         contentColor = MaterialTheme.colors.secondary
     ) {
         Row {
-            if (substitutionData.className != "")
+            if (!substitutionData.className.isNullOrEmpty())
                 Card(
                     shape = RoundedCornerShape(14.dp),
                     backgroundColor = MaterialTheme.colors.secondary,
                     contentColor = MaterialTheme.colors.primaryVariant, modifier = Modifier
                         .padding(10.dp)
-                        .size(35.dp)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.padding(5.dp)
                     ) {
-                        Text(text = substitutionData.className ?: "Brak danych", fontSize = 15.sp)
+                        Text(text = substitutionData.className, fontSize = 15.sp)
                     }
                 }
 
             Column(modifier = Modifier.padding(10.dp)) {
                 substitutionData.entries?.forEach {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = it.lessons ?: "-", fontSize = 30.sp)
+                        Text(text = it.lessons ?: "", fontSize = 30.sp)
                         Spacer(modifier = Modifier.width(5.dp))
                         Column(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalAlignment = if (it.teacherReplacement?.contains("W tym dniu nie ma żadnych") == true) Alignment.CenterHorizontally else Alignment.Start
+                            horizontalAlignment = if (it.teacherReplacement?.contains("W tym dniu nie ma żadnych") == true || it.teacherReplacement?.contains(
+                                    "Brak informacji"
+                                ) == true
+                            ) Alignment.CenterHorizontally else Alignment.Start
                         ) {
-                            if (it.subject != "")
-                                it.subject?.let { it1 ->
-                                    Text(
-                                        modifier = Modifier.padding(top = 5.dp),
-                                        text = it1,
-                                        color = MaterialTheme.colors.secondary,
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 20.sp
-                                    )
-                                }
-                            if (it.teacherReplacement != "")
-                                it.teacherReplacement?.let { it1 ->
-                                    Text(
-                                        color = MaterialTheme.colors.primary, text = it1
-                                    )
-                                }
+                            if (!it.subject.isNullOrEmpty())
+                                Text(
+                                    modifier = Modifier.padding(top = 5.dp),
+                                    text = it.subject,
+                                    color = MaterialTheme.colors.secondary,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 20.sp
+                                )
+                            if (!it.teacherReplacement.isNullOrEmpty())
+                                Text(
+                                    color = MaterialTheme.colors.primary,
+                                    text = it.teacherReplacement
+                                )
 
-                            if (it.roomChange != "")
-                                it.roomChange?.let { it1 ->
-                                    Text(
-                                        text = it1,
-                                        color = MaterialTheme.colors.primary,
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 16.sp
-                                    )
-                                }
+                            if (!it.roomChange.isNullOrEmpty())
+                                Text(
+                                    text = it.roomChange,
+                                    color = MaterialTheme.colors.primary,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 16.sp
+                                )
                         }
                     }
 

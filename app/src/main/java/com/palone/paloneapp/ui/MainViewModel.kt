@@ -18,37 +18,75 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _uiState = MutableStateFlow(HomeScreenUiState())
     val uiState: StateFlow<HomeScreenUiState> = _uiState.asStateFlow()
 
-    private val _cal = MutableStateFlow(Calendar.getInstance())
-    val cal: StateFlow<Calendar> = _cal.asStateFlow()
+    private val _currentCalendar = MutableStateFlow(Calendar.getInstance())
 
-    private val _selectedLocalDate = MutableStateFlow(
-        LocalDate(
-            year = _cal.value.get(Calendar.YEAR),
-            monthNumber = _cal.value.get(Calendar.MONTH) + 1,
-            dayOfMonth = _cal.value.get(Calendar.DAY_OF_MONTH)
-        )
-    )
-    val selectedLocalDate: StateFlow<LocalDate> = _selectedLocalDate.asStateFlow()
 
     fun updateSelectedLocalDate(date: LocalDate) {
-        _selectedLocalDate.value = date
+        _uiState.update { it.copy(selectedLocalDate = date) }
     }
 
-    fun refreshSubstitutionsDataWithLocalDate(localDate: LocalDate) {
+    suspend fun openDrawer() {
+        _uiState.value.scaffoldState.drawerState.open()
+    }
+
+    suspend fun closeDrawer() {
+        _uiState.value.scaffoldState.drawerState.close()
+    }
+
+    fun updateTextFilter(query: String) {
+        _uiState.update { it.copy(classFilter = query) }
+    }
+
+    fun showTextFilterDialog() {
+        _uiState.update { it.copy(shouldShowFilterDialog = true) }
+    }
+
+    fun hideTextFilterDialog() {
+        _uiState.update { it.copy(shouldShowFilterDialog = false) }
+    }
+
+    fun refreshSubstitutionsDataWithLocalDate(localDate: LocalDate, onFinish: () -> Unit = {}) {
         _uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch {
             _uiState.update { currentState ->
                 currentState.copy(
                     isLoading = false,
-                    substitutionsList = UseCases().getSubstitutionsDataWithLocalDate(localDate)
+                    substitutionsList = UseCases().getSubstitutionsDataWithLocalDate(localDate),
                 )
             }
+            onFinish()
         }
     }
 
+    fun refreshFilteredSubstitutionsWithQuery(query: String = _uiState.value.classFilter) {
+        _uiState.update { it.copy(isLoading = true) }
+        _uiState.update { currentState ->
+            currentState.copy(
+                isLoading = false,
+                filteredSubstitutionsList = _uiState.value.substitutionsList?.let {
+                    UseCases().getFilteredSubstitutionDataByQuery(
+                        it, query
+                    )
+                }
+            )
+        }
+    }
+
+
     init {
-        refreshSubstitutionsDataWithLocalDate(
-            _selectedLocalDate.value
+        val currentCalendar = MutableStateFlow(Calendar.getInstance())
+        updateSelectedLocalDate(
+            LocalDate(
+                year = currentCalendar.value.get(Calendar.YEAR),
+                monthNumber = currentCalendar.value.get(Calendar.MONTH) + 1,
+                dayOfMonth = currentCalendar.value.get(Calendar.DAY_OF_MONTH)
+            )
         )
+        refreshSubstitutionsDataWithLocalDate(
+            _uiState.value.selectedLocalDate
+        ) {
+            refreshFilteredSubstitutionsWithQuery()
+        }
+
     }
 }

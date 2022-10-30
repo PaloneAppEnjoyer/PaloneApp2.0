@@ -3,13 +3,26 @@ package com.palone.paloneapp.domain
 import android.util.Log
 import com.palone.paloneapp.data.SubstitutionsDataProvider
 import com.palone.paloneapp.data.models.SubstitutionData
-import com.palone.paloneapp.data.models.SubstitutionDataEntries
+import com.palone.paloneapp.data.models.SubstitutionDataEntry
 import kotlinx.datetime.LocalDate
 
 class UseCases {
 
     suspend fun getSubstitutionsDataWithLocalDate(localDate: LocalDate): List<SubstitutionData> {
         return SubstitutionsDataProvider().getRemoteData(localDate)
+    }
+
+    fun getFilteredSubstitutionDataByQuery(
+        data: List<SubstitutionData>,
+        query: String
+    ): List<SubstitutionData> {
+        val sortedData: MutableList<SubstitutionData> = mutableListOf()
+        data.forEach {
+            Log.i("", "$it")
+            if ((it.className?.contains(query) == true))
+                sortedData.add(it)
+        }
+        return sortedData
     }
 
     fun getSubstitutionsFromHtml(rawData: String?): List<SubstitutionData> {
@@ -246,6 +259,10 @@ class UseCases {
                 """ Nauczyciel:""",
                 "\nNauczyciel:"
             )
+            string = string.replace(
+                """ <img src="/global/pics/ui/events32svg" style="height:16px;display:inline-block;vertical-align:text-bottom;margin-right:5px"/>""",
+                ""
+            )
 
 
             //val kek = string.split("|||").toMutableList()
@@ -281,7 +298,7 @@ class UseCases {
                 pickedClass = pickedClass.replace("{", "")
                 pickedClass = pickedClass.replace("}", "")
                 pickedClass = pickedClass.replace(" ", "")
-                val list = mutableListOf<SubstitutionDataEntries>()
+                val list = mutableListOf<SubstitutionDataEntry>()
                 for (i in 0 until description.size) {
                     val listOfDescription = listOf(
                         "(.* \\n)|(.* {3})".toRegex().find(
@@ -305,14 +322,13 @@ class UseCases {
                         )?.value?.replace("\n", "")
                     )
                     list.add(
-                        SubstitutionDataEntries(
-                            lessons[0],
+                        SubstitutionDataEntry(
+                            lessons[i],
                             listOfDescription[0],
                             listOfDescription[1],
                             listOfDescription[2]
                         )
                     )
-                    Log.i("", "$listOfDescription")
 
                 }
 //                Log.i("mapka","$lessonToDescription")

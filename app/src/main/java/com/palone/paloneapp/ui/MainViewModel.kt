@@ -1,7 +1,6 @@
 package com.palone.paloneapp.ui
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.palone.paloneapp.data.models.HomeScreenUiState
 import com.palone.paloneapp.domain.UseCases
@@ -13,7 +12,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import java.util.*
 
-class MainViewModel(application: Application) : AndroidViewModel(application) {
+class MainViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeScreenUiState())
     val uiState: StateFlow<HomeScreenUiState> = _uiState.asStateFlow()
@@ -74,12 +73,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
 
     init {
-        val currentCalendar = MutableStateFlow(Calendar.getInstance())
         updateSelectedLocalDate(
             LocalDate(
-                year = currentCalendar.value.get(Calendar.YEAR),
-                monthNumber = currentCalendar.value.get(Calendar.MONTH) + 1,
-                dayOfMonth = currentCalendar.value.get(Calendar.DAY_OF_MONTH)
+                year = _currentCalendar.value.get(Calendar.YEAR),
+                monthNumber = _currentCalendar.value.get(Calendar.MONTH) + 1,
+                dayOfMonth = _currentCalendar.value.get(Calendar.DAY_OF_MONTH)
             )
         )
         refreshSubstitutionsDataWithLocalDate(

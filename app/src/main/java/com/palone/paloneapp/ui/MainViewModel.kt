@@ -1,5 +1,6 @@
 package com.palone.paloneapp.ui
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.palone.paloneapp.data.models.HomeScreenUiState
@@ -84,6 +85,11 @@ class MainViewModel : ViewModel() {
             _uiState.value.selectedLocalDate
         ) {
             refreshFilteredSubstitutionsWithQuery()
+            viewModelScope.launch {
+                UseCases().getTimetableData().filter { it.className.contains("4ft (g)") }
+                    .forEach { Log.i("Timetable data test", it.toString()) }
+            }// For testing purposes
+
         }
 
     }

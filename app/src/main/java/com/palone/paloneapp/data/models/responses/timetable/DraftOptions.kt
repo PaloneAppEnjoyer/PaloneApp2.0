@@ -1,0 +1,3 @@
+package com.palone.paloneapp.models.timetableLessonsResponseData
+
+class DraftOptions

@@ -1,5 +1,8 @@
 package com.palone.paloneapp.data.models
 
+import com.google.gson.annotations.SerializedName
+
 data class SubstitutionsRemoteDataResponse(
-    val r: String
+    @SerializedName("r")
+    val response: String
 )

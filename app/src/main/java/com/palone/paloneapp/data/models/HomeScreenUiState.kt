@@ -10,7 +10,7 @@ data class HomeScreenUiState(
     var selectedLocalDate: LocalDate = LocalDate(2000, 1, 1),
     var shouldShowFilterDialog: Boolean = false,
     val isLoading: Boolean = false,
-    val errorMessage: String? = null,
+    val errorMessage: String = "",
     var classFilter: String = "",
     val scaffoldState: ScaffoldState = ScaffoldState(
         DrawerState(DrawerValue.Closed),

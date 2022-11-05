@@ -13,7 +13,6 @@ object RetrofitInstance {
     fun setBody(body: String) {
         _body = body
     }
-
     private val client = OkHttpClient.Builder().apply {
         logging.level = HttpLoggingInterceptor.Level.BODY
         addInterceptor(Interceptor { chain ->
@@ -26,6 +25,5 @@ object RetrofitInstance {
         Retrofit.Builder().baseUrl("https://elektryk.edupage.org")
             .addConverterFactory(GsonConverterFactory.create()).client(client).build()
             .create(OnlineResourcesApi::class.java)
-
     }
 }

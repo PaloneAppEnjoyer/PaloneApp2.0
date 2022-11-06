@@ -3,7 +3,7 @@ package com.palone.paloneapp.ui
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.palone.paloneapp.data.models.HomeScreenUiState
+import com.palone.paloneapp.data.models.SubstitutionsScreenUiState
 import com.palone.paloneapp.domain.UseCases
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,13 +13,10 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import java.util.*
 
-class MainViewModel : ViewModel() {
-
-    private val _uiState = MutableStateFlow(HomeScreenUiState())
-    val uiState: StateFlow<HomeScreenUiState> = _uiState.asStateFlow()
-
+class SubstitutionsViewModel : ViewModel() {
+    private val _uiState = MutableStateFlow(SubstitutionsScreenUiState())
+    val uiState: StateFlow<SubstitutionsScreenUiState> = _uiState.asStateFlow()
     private val _currentCalendar = MutableStateFlow(Calendar.getInstance())
-
 
     fun updateSelectedLocalDate(date: LocalDate) {
         _uiState.update { it.copy(selectedLocalDate = date) }
@@ -86,8 +83,26 @@ class MainViewModel : ViewModel() {
         ) {
             refreshFilteredSubstitutionsWithQuery()
             viewModelScope.launch {
-                UseCases().getTimetableData().filter { it.className.contains("4ft (g)") }
-                    .forEach { Log.i("Timetable data test", it.toString()) }
+                val timetableData =
+                    UseCases().getTimetableData(
+                        UseCases().getTtViewerData().response?.regular?.default_num?.toInt() ?: 100
+                    )
+                val directory =
+                    "/data/user/0/com.palone.paloneapp/files" //TODO("can't do this like that")
+
+                UseCases().saveTimetableDataToLocalJsonFile(
+                    timetableData = timetableData,
+                    filePath = directory,
+                    "latest_timetable_data.json"
+                ) {
+                    UseCases().getTimetableDataFromLocalJsonFile(
+                        filePath = directory,
+                        "latest_timetable_data.json"
+                    ).forEach { pog ->
+                        pog.entries.filter { it.dayName == "Pn" }
+                            .forEach { Log.i("Timetable check", pog.toString()) }
+                    }
+                }
             }// For testing purposes
 
         }

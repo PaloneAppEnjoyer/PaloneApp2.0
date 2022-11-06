@@ -3,76 +3,104 @@ package com.palone.paloneapp.domain
 import com.palone.paloneapp.data.models.SubstitutionData
 import com.palone.paloneapp.data.models.SubstitutionDataEntry
 import com.palone.paloneapp.data.models.TimetableData
+import com.palone.paloneapp.data.models.TimetableDataEntry
 import com.palone.paloneapp.data.models.responses.timetable.TimetableRemoteDataResponse
+import com.palone.paloneapp.data.models.timetableVariables.*
 
 class Parsers {
     fun getTimetableDataResponseParsedToListOfTimetableData(dataResponse: TimetableRemoteDataResponse): List<TimetableData> {
-        var lessonsSorted = listOf<TimetableData>()
-        val map = mutableMapOf<String, String>()
-        val mapTeachers = mutableMapOf<String, String>()
-        val mapClasses = mutableMapOf<String, String>()
-        val mapDays = mutableMapOf<String, String>()
-        val mapDaysdefs = mutableMapOf<String, String>()
-        val mapCards = mutableMapOf<String, String>() //lessonid to days
+        val timetableData = mutableListOf<TimetableData>()
+        var lessonsSorted = mutableListOf<TimetableDataEntry>()
+        val subjects = mutableListOf<Subject>()
+        val mapTeachers = mutableListOf<Teacher>()
+        val mapClasses = mutableListOf<SchoolClass>()
+        val mapDays = mutableListOf<Day>()
+        val mapDaysdefs = mutableListOf<DaysDef>()
+        val mapCards = mutableListOf<Card>()
         val mapCardsPeriod = mutableMapOf<String, String>() //lessonid to period
-        val mapClassrooms = mutableMapOf<String, String>()
-        val mapGroups = mutableMapOf<String, String>()
-        val lessonsList = mutableListOf<TimetableData>()
-        val actualLessonsList = mutableListOf<TimetableData>()
+        val mapClassrooms = mutableListOf<ClassRoom>()
+        val mapGroups = mutableListOf<Group>()
+        val lessonsList = mutableListOf<Lesson>()
+        val actualLessonsList = mutableListOf<TimetableDataEntry>()
+        val mapClassIdToGroup = mutableMapOf<String, MutableMap<String, String>>()
+
+
+
+
+
 
         dataResponse.response.dbiAccessorRes.tables.forEach { it1 ->
             if (it1.data_rows.isNotEmpty() && it1.id == "subjects")
-                it1.data_rows.forEach { map.put(it.id, it.short) }
+                it1.data_rows.forEach { subjects.add(Subject(it.id, it.name, it.short)) }
         }
         dataResponse.response.dbiAccessorRes.tables.forEach { it1 ->
             if (it1.data_rows.isNotEmpty() && it1.id == "teachers")
-                it1.data_rows.forEach { mapTeachers.put(it.id, it.short) }
+                it1.data_rows.forEach { mapTeachers.add(Teacher(it.id, it.short)) }
         }
         dataResponse.response.dbiAccessorRes.tables.forEach { it1 ->
             if (it1.data_rows.isNotEmpty() && it1.id == "classes")
-                it1.data_rows.forEach { mapClasses.put(it.id, it.name) }
-        }
-        dataResponse.response.dbiAccessorRes.tables.forEach { it1 ->
-            if (it1.data_rows.isNotEmpty() && it1.id == "days")
-                it1.data_rows.forEach { mapDays.put(it.id, it.name) }
-        }
-        dataResponse.response.dbiAccessorRes.tables.forEach { it1 ->
-            if (it1.data_rows.isNotEmpty() && it1.id == "daysdefs")
                 it1.data_rows.forEach {
-                    if (it.id != "*6") mapDaysdefs.put(
-                        it.vals[0],
-                        it.short
+                    mapClasses.add(
+                        SchoolClass(
+                            it.id, it.name.replace("(", "")
+                                .replace(")", "")
+                                .replace("{", "")
+                                .replace("}", "")
+                                .replace(" ", "")
+                        )
                     )
                 }
         }
         dataResponse.response.dbiAccessorRes.tables.forEach { it1 ->
-            if (it1.data_rows.isNotEmpty() && it1.id == "cards") {
+            if (it1.data_rows.isNotEmpty() && it1.id == "days")
+                it1.data_rows.forEach { mapDays.add(Day(it.id, it.short)) }
+        }
+        dataResponse.response.dbiAccessorRes.tables.forEach { it1 ->
+            if (it1.data_rows.isNotEmpty() && it1.id == "daysdefs")
                 it1.data_rows.forEach {
-                    mapCards.put(it.lessonid, it.days)
-                    mapCardsPeriod.put(it.lessonid, it.period)
+                    mapDaysdefs.add(DaysDef(it.id, it.short, it.vals))
                 }
-            }
         }
         dataResponse.response.dbiAccessorRes.tables.forEach { it1 ->
             if (it1.data_rows.isNotEmpty() && it1.id == "classrooms")
-                it1.data_rows.forEach { mapClassrooms.put(it.id, it.short) }
+                it1.data_rows.forEach { mapClassrooms.add(ClassRoom(it.id, it.short)) }
         }
         dataResponse.response.dbiAccessorRes.tables.forEach { it1 ->
             if (it1.data_rows.isNotEmpty() && it1.id == "groups")
-                it1.data_rows.forEach { mapGroups.put(it.id, it.name) }
+                it1.data_rows.forEach {
+                    mapGroups.add(
+                        Group(
+                            it.id,
+                            it.name,
+                            mapClasses.find { it2 -> it2.id == it.classid } ?: SchoolClass(
+                                "9999",
+                                "Brak klasy"
+                            ), divisionId = it.divisionid
+                        )
+                    )
+                }
         }
         dataResponse.response.dbiAccessorRes.tables.forEach { it1 ->
             if (it1.data_rows.isNotEmpty() && it1.id == "lessons")
                 it1.data_rows.forEach {
                     if (it.id.isNotEmpty()) {
                         lessonsList.add(
-                            TimetableData(
+                            Lesson(
                                 it.id,
-                                it.subjectid,
-                                it.teacherids,
-                                it.classids,
-                                it.durationperiods,
-                                groupids = it.groupids
+                                subjects.find { it2 -> it2.id == it.subjectid } ?: Subject(
+                                    "9999",
+                                    "Brak przedmiotu",
+                                    "Brak Przedniotu"
+                                ),
+                                mapTeachers.filter { it2 -> it.teacherids.contains(it2.id) },
+                                mapGroups.filter { it2 -> it.groupids.contains(it2.id) },
+                                mapClasses.filter { it2 -> it.classids.contains(it2.id) },
+                                mapClassrooms.filter { it2 ->
+                                    if (!it.classroomidss.isNullOrEmpty()) it.classroomidss[0].contains(
+                                        it2.id
+                                    ) else false
+                                },
+                                it.durationperiods
                             )
                         )
                     }
@@ -81,82 +109,79 @@ class Parsers {
         }
         dataResponse.response.dbiAccessorRes.tables.forEach { it1 ->
             if (it1.data_rows.isNotEmpty() && it1.id == "cards") {
-                it1.data_rows.forEach { it2 ->
-                    lessonsList.forEach { it3 ->
-                        if (it3.id == it2.lessonid) {
-                            map[it3.subjectid]?.let { it4 ->
-                                it3.subjectName = it4
-                            }
-                            it3.teacherids.forEach { it4 ->
-                                mapTeachers[it4]?.let { it5 ->
-                                    if (!it3.teachersShorted.contains(it5))
-                                        it3.teachersShorted.add(it5)
-                                }
-                            }
-                            it3.classids.forEach { it4 ->
-                                mapClasses[it4]?.let { it5 ->
-                                    if (!it3.className.contains(it5)) it3.className.add(
-                                        it5
+                it1.data_rows.forEach {
+                    mapCards.add(
+                        Card(
+                            it.id,
+                            lessonsList.find { it2 -> it.lessonid == it2.id } ?: Lesson(
+                                "9999",
+                                Subject(
+                                    "9999",
+                                    "Brak przedmiotu",
+                                    "Brak Przedniotu"
+                                ),
+                                listOf(Teacher("9999", "Brak danych")),
+                                listOf(
+                                    Group(
+                                        "9999",
+                                        "Brak danych",
+                                        SchoolClass("9999", "Brak danych"),
+                                        "9999"
                                     )
-                                }
+                                ),
+                                listOf(SchoolClass("9999", "Brak danych")),
+                                listOf(ClassRoom("9999", "Brak danych")),
+                                9999
+                            ),
+                            if (it.period != "") it.period.toInt() else 9999,
+                            mapDaysdefs.find { it2 -> it2.values.contains(it.days) } ?: DaysDef(
+                                "9999", "Brak danych",
+                                listOf("Brak danych")
+                            ),
+                            mapClassrooms.filter { it2 ->
+                                if (it.classroomids.isNotEmpty()) it.classroomids.contains(
+                                    it2.id
+                                ) else false
                             }
-                            it3.groupids.forEach { it4 ->
-                                mapGroups[it4]?.let { it5 ->
-                                    if (!it3.groupNames.contains(
-                                            it5
-                                        )
-                                    ) it3.groupNames.add(it5)
-                                }
-                            }
-                            mapDaysdefs[it2.days]?.let { it4 ->
-                                it3.day = it4
-                                when (it4) {
-                                    "Pn" -> it3.dayInt = 1
-                                    "Wt" -> it3.dayInt = 2
-                                    "Śr" -> it3.dayInt = 3
-                                    "Czw" -> it3.dayInt = 4
-                                    "Pi" -> it3.dayInt = 5
-                                }
-                            }
-                            it3.lessonFrom = it2.period.toIntOrNull()
-                            it3.lessonTo = it2.period.toIntOrNull()?.minus(1)
-                                ?.plus(it3.durationperiods)
-                            it2.classroomids.forEach { it4 ->
-                                mapClassrooms[it4]?.let { it5 ->
-                                    it3.classroomsName = it5
-                                }
-                            }
-                            actualLessonsList.add(
-                                TimetableData(
-                                    it3.id,
-                                    it3.subjectid,
-                                    it3.teacherids,
-                                    it3.classids,
-                                    it3.durationperiods,
-                                    it3.subjectName,
-                                    it3.teachersShorted,
-                                    it3.className,
-                                    it3.day,
-                                    it3.lessonFrom,
-                                    it3.lessonTo,
-                                    it3.classroomsName,
-                                    it3.groupids,
-                                    it3.groupNames,
-                                    it3.dayInt
-                                )
-                            )
-                            lessonsSorted = actualLessonsList.sortedWith(
-                                compareBy({ it.dayInt },
-                                    { it.lessonFrom })
-                            )
-                        }
-                    }
 
+                        )
+                    )
                 }
             }
         }
-        return lessonsSorted
+        val allSchoolClasses = mapClasses.distinct()
 
+
+        allSchoolClasses.forEach { parentSchoolClass ->
+            mapCards.filter { it.lesson.group.any { it2 -> parentSchoolClass == it2.schoolClass } }
+                .forEach { it3 ->
+                    if (it3.classRooms.size == 1) {
+                        val classesInGroups = mutableListOf<String>()
+                        it3.lesson.schoolClass.forEach { it4 -> classesInGroups.add(it4.name) }
+                        timetableData.add(
+                            TimetableData(
+                                className = parentSchoolClass.name,
+                                entries = listOf(
+                                    TimetableDataEntry(
+                                        it3.lesson.subject.shortName,
+                                        it3.classRooms[0].shortName,
+                                        it3.lesson.teacher[0].name,
+                                        classesInGroups.toList(),
+                                        it3.lesson.durationPeriod,
+                                        it3.day.shortName,
+                                        it3.period,
+                                        it3.lesson.durationPeriod + it3.period - 1,
+                                        it3.lesson.group.find { it4 -> it4.schoolClass == parentSchoolClass }?.name
+                                            ?: "Brak danych",
+                                        it3.day.id.replace("*", "").toInt()
+                                    )
+                                )
+                            )
+                        )
+                    }
+                }
+        }
+        return timetableData
     }
 
     fun getSubstitutionsFromHtml(rawData: String?): List<SubstitutionData> {

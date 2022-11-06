@@ -6,7 +6,7 @@ import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarHostState
 import kotlinx.datetime.LocalDate
 
-data class HomeScreenUiState(
+data class SubstitutionsScreenUiState(
     var selectedLocalDate: LocalDate = LocalDate(2000, 1, 1),
     var shouldShowFilterDialog: Boolean = false,
     val isLoading: Boolean = false,

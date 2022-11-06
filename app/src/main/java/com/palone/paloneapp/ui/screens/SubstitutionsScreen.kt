@@ -29,14 +29,14 @@ import com.himanshoe.kalendar.color.KalendarThemeColor
 import com.himanshoe.kalendar.model.KalendarType
 import com.palone.paloneapp.data.models.SubstitutionData
 import com.palone.paloneapp.data.models.SubstitutionDataEntry
-import com.palone.paloneapp.ui.MainViewModel
+import com.palone.paloneapp.ui.SubstitutionsViewModel
 import com.palone.paloneapp.ui.components.TopBar
 import com.palone.paloneapp.ui.components.home_screen.FilterDialog
 import com.palone.paloneapp.ui.components.home_screen.SubstitutionElement
 
 
 @Composable
-fun HomeScreen(viewModel: MainViewModel) {
+fun SubstitutionsScreen(viewModel: SubstitutionsViewModel) {
     Scaffold(
         scaffoldState = viewModel.uiState.collectAsState().value.scaffoldState,
         modifier = Modifier.fillMaxSize(),

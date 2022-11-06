@@ -13,10 +13,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.palone.paloneapp.ui.MainViewModel
+import com.palone.paloneapp.ui.SubstitutionsViewModel
 
 @Composable
-fun FilterDialog(viewModel: MainViewModel) {
+fun FilterDialog(viewModel: SubstitutionsViewModel) {
     Dialog(onDismissRequest = { viewModel.hideTextFilterDialog() }) {
 
         Box(

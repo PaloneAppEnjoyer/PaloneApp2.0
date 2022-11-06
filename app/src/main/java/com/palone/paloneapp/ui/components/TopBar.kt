@@ -10,12 +10,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.palone.paloneapp.ui.MainViewModel
+import com.palone.paloneapp.ui.SubstitutionsViewModel
 import kotlinx.coroutines.launch
 
 @Composable
 fun TopBar(
-    viewModel: MainViewModel,
+    viewModel: SubstitutionsViewModel,
     additionalButton: @Composable () -> Unit = { Spacer(modifier = Modifier.width(0.dp)) }
 ) {
     val scope = rememberCoroutineScope()

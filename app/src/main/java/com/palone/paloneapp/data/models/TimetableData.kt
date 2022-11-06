@@ -1,19 +1,15 @@
 package com.palone.paloneapp.data.models
 
-data class TimetableData(
-    val id: String,
-    val subjectid: String,
-    val teacherids: List<String>,
-    val classids: List<String>,
-    val durationperiods: Int,
-    var subjectName: String? = null,
-    val teachersShorted: MutableList<String?> = mutableListOf(),
-    var className: MutableList<String?> = mutableListOf(),
-    var day: String? = null,
-    var lessonFrom: Int? = null,
-    var lessonTo: Int? = null,
-    var classroomsName: String? = null,
-    val groupids: List<String>,
-    val groupNames: MutableList<String?> = mutableListOf(),
-    var dayInt: Int? = null
+data class TimetableData(val className: String, val entries: List<TimetableDataEntry>)
+data class TimetableDataEntry(
+    val subjectShortName: String,
+    val classroomsName: String,
+    val teacherShortName: String,
+    val schoolClassNames: List<String>,
+    val duration: Int,
+    var dayName: String,
+    var lessonFrom: Int,
+    var lessonTo: Int,
+    val groupName: String,
+    var dayInt: Int
 )

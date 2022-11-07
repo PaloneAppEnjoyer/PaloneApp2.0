@@ -1,5 +1,6 @@
 package com.palone.paloneapp.domain
 
+import android.util.Log
 import com.palone.paloneapp.data.models.SubstitutionData
 import com.palone.paloneapp.data.models.SubstitutionDataEntry
 import com.palone.paloneapp.data.models.TimetableData
@@ -10,19 +11,16 @@ import com.palone.paloneapp.data.models.timetableVariables.*
 class Parsers {
     fun getTimetableDataResponseParsedToListOfTimetableData(dataResponse: TimetableRemoteDataResponse): List<TimetableData> {
         val timetableData = mutableListOf<TimetableData>()
-        var lessonsSorted = mutableListOf<TimetableDataEntry>()
+        val lessonsSorted = mutableListOf<Map<String, TimetableDataEntry>>()
         val subjects = mutableListOf<Subject>()
         val mapTeachers = mutableListOf<Teacher>()
         val mapClasses = mutableListOf<SchoolClass>()
         val mapDays = mutableListOf<Day>()
         val mapDaysdefs = mutableListOf<DaysDef>()
         val mapCards = mutableListOf<Card>()
-        val mapCardsPeriod = mutableMapOf<String, String>() //lessonid to period
         val mapClassrooms = mutableListOf<ClassRoom>()
         val mapGroups = mutableListOf<Group>()
         val lessonsList = mutableListOf<Lesson>()
-        val actualLessonsList = mutableListOf<TimetableDataEntry>()
-        val mapClassIdToGroup = mutableMapOf<String, MutableMap<String, String>>()
 
 
 
@@ -150,18 +148,16 @@ class Parsers {
             }
         }
         val allSchoolClasses = mapClasses.distinct()
-
-
         allSchoolClasses.forEach { parentSchoolClass ->
             mapCards.filter { it.lesson.group.any { it2 -> parentSchoolClass == it2.schoolClass } }
                 .forEach { it3 ->
                     if (it3.classRooms.size == 1) {
                         val classesInGroups = mutableListOf<String>()
                         it3.lesson.schoolClass.forEach { it4 -> classesInGroups.add(it4.name) }
-                        timetableData.add(
-                            TimetableData(
-                                className = parentSchoolClass.name,
-                                entries = listOf(
+                        lessonsSorted.add(
+                            mapOf(
+                                Pair(
+                                    parentSchoolClass.name,
                                     TimetableDataEntry(
                                         it3.lesson.subject.shortName,
                                         it3.classRooms[0].shortName,
@@ -177,9 +173,37 @@ class Parsers {
                                     )
                                 )
                             )
+//                            TimetableData(
+//                                className = parentSchoolClass.name,
+//                                entries = listOf(
+//                                    TimetableDataEntry(
+//                                        it3.lesson.subject.shortName,
+//                                        it3.classRooms[0].shortName,
+//                                        it3.lesson.teacher[0].name,
+//                                        classesInGroups.toList(),
+//                                        it3.lesson.durationPeriod,
+//                                        it3.day.shortName,
+//                                        it3.period,
+//                                        it3.lesson.durationPeriod + it3.period - 1,
+//                                        it3.lesson.group.find { it4 -> it4.schoolClass == parentSchoolClass }?.name
+//                                            ?: "Brak danych",
+//                                        it3.day.id.replace("*", "").toInt()
+//                                    )
+//                                )
+//                            )
                         )
                     }
                 }
+        }
+        allSchoolClasses.forEach { className ->
+            val mut = mutableListOf<TimetableDataEntry>()
+            lessonsSorted.forEach { it2 ->
+                it2.filter { it.key == className.name }.forEach {
+                    mut.add(it.value)
+                }
+            }
+            Log.i(className.name, mut.toString())
+            timetableData.add(TimetableData(className = className.name, entries = mut.toList()))
         }
         return timetableData
     }
@@ -344,7 +368,7 @@ class Parsers {
 
 
             string = string.replace(
-                """<div class="${match}"><style type="text/css">.${match} .signature {width:100px;text-Align:center;color:#a0a0a0}n.${match} .row {display:flex;flex-Direction:row;align-Items:baseline;font-Size:12px;margin-Bottom:1px}n.${match} .period {font-Size:12px;text-Align:center;white-Space:nowrap}n.${match} .period>span {}n.${match} .info {flex:1}n.${match} table {width:100%;table-Layout:auto}n.${match} tbody {border:2px solid #808080}n.${match} td {border:1px solid #808080;padding:2px}n.${match} .header {font-Size:16px;text-Align:center}n.${match} .time {font-Size:12px;text-Align:center;white-Space:pre}</style><div data-date="${date}"><div style="text-align:center"><span class="print-font-resizable">""",
+                """<div class="$match"><style type="text/css">.${match} .signature {width:100px;text-Align:center;color:#a0a0a0}n.${match} .row {display:flex;flex-Direction:row;align-Items:baseline;font-Size:12px;margin-Bottom:1px}n.${match} .period {font-Size:12px;text-Align:center;white-Space:nowrap}n.${match} .period>span {}n.${match} .info {flex:1}n.${match} table {width:100%;table-Layout:auto}n.${match} tbody {border:2px solid #808080}n.${match} td {border:1px solid #808080;padding:2px}n.${match} .header {font-Size:16px;text-Align:center}n.${match} .time {font-Size:12px;text-Align:center;white-Space:pre}</style><div data-date="${date}"><div style="text-align:center"><span class="print-font-resizable">""",
                 ""
             )
             string = string.replace("""<style type="text/css">""", "")
@@ -397,7 +421,7 @@ class Parsers {
             string = string.replace(".", "")
             //string = string.replace(":","")
             val match2 = "\\w{8} \\w{2}:\\w{2}:\\w{2}".toRegex().find(string)?.value
-                ?: "\\w{8} \\w{1}:\\w{2}:\\w{2}".toRegex().find(string)?.value
+                ?: "\\w{8} \\w:\\w{2}:\\w{2}".toRegex().find(string)?.value
             string = string.replace(
                 """</span></td></tr></tbody></table></div><div style="text-align:center;font-size:12px"><a href="https://wwwasctimetablescom" target="blank">wwwasctimetablescom</a> - $match2</div></div>""",
                 ""

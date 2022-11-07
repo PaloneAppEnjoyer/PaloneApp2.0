@@ -1,8 +1,8 @@
 package com.palone.paloneapp.ui
 
-import android.util.Log
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavHostController
+import com.palone.paloneapp.data.ScreensProperties
 import com.palone.paloneapp.data.models.SubstitutionsScreenUiState
 import com.palone.paloneapp.domain.UseCases
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import java.util.*
 
-class SubstitutionsViewModel : ViewModel() {
+class SubstitutionsViewModel : MainViewModel() {
     private val _uiState = MutableStateFlow(SubstitutionsScreenUiState())
     val uiState: StateFlow<SubstitutionsScreenUiState> = _uiState.asStateFlow()
     private val _currentCalendar = MutableStateFlow(Calendar.getInstance())
@@ -22,11 +22,15 @@ class SubstitutionsViewModel : ViewModel() {
         _uiState.update { it.copy(selectedLocalDate = date) }
     }
 
-    suspend fun openDrawer() {
+    override fun onFabClick(navHostController: NavHostController) {
+        navHostController.navigate(ScreensProperties.TimetableScreen.route)
+    }
+
+    override suspend fun openDrawer() {
         _uiState.value.scaffoldState.drawerState.open()
     }
 
-    suspend fun closeDrawer() {
+    override suspend fun closeDrawer() {
         _uiState.value.scaffoldState.drawerState.close()
     }
 
@@ -82,29 +86,27 @@ class SubstitutionsViewModel : ViewModel() {
             _uiState.value.selectedLocalDate
         ) {
             refreshFilteredSubstitutionsWithQuery()
-            viewModelScope.launch {
-                val timetableData =
-                    UseCases().getTimetableData(
-                        UseCases().getTtViewerData().response?.regular?.default_num?.toInt() ?: 100
-                    )
-                val directory =
-                    "/data/user/0/com.palone.paloneapp/files" //TODO("can't do this like that")
-
-                UseCases().saveTimetableDataToLocalJsonFile(
-                    timetableData = timetableData,
-                    filePath = directory,
-                    "latest_timetable_data.json"
-                ) {
-                    UseCases().getTimetableDataFromLocalJsonFile(
-                        filePath = directory,
-                        "latest_timetable_data.json"
-                    ).forEach { pog ->
-                        pog.entries.filter { it.dayName == "Pn" }
-                            .forEach { Log.i("Timetable check", pog.toString()) }
-                    }
-                }
-            }// For testing purposes
-
+//            viewModelScope.launch {
+//                val timetableData =
+//                    UseCases().getTimetableData(
+//                        UseCases().getTtViewerData().response?.regular?.default_num?.toInt() ?: 100
+//                    )
+//
+//                UseCases().saveTimetableDataToLocalJsonFile(
+//                    timetableData = timetableData,
+//                    filePath = directory,
+//                    "latest_timetable_data.json"
+//                ) {
+//                    UseCases().getTimetableDataFromLocalJsonFile(
+//                        filePath = directory,
+//                        "latest_timetable_data.json"
+//                    ).forEach { pog ->
+//                        pog.entries.filter { it.dayName == "Pn" }
+//                            .forEach { Log.i("Timetable check", pog.toString()) }
+//                    }
+//                }
+//            }// For testing purposes
+//
         }
 
     }

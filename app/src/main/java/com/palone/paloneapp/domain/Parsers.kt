@@ -1,10 +1,7 @@
 package com.palone.paloneapp.domain
 
 import android.util.Log
-import com.palone.paloneapp.data.models.SubstitutionData
-import com.palone.paloneapp.data.models.SubstitutionDataEntry
-import com.palone.paloneapp.data.models.TimetableData
-import com.palone.paloneapp.data.models.TimetableDataEntry
+import com.palone.paloneapp.data.models.*
 import com.palone.paloneapp.data.models.responses.timetable.TimetableRemoteDataResponse
 import com.palone.paloneapp.data.models.timetableVariables.*
 
@@ -159,7 +156,8 @@ class Parsers {
                                 Pair(
                                     parentSchoolClass.name,
                                     TimetableDataEntry(
-                                        it3.lesson.subject.shortName,
+                                        it3.lesson.subject.shortName,//TODO Test
+                                        it3.lesson.subject.name,
                                         it3.classRooms[0].shortName,
                                         it3.lesson.teacher[0].name,
                                         classesInGroups.toList(),
@@ -173,28 +171,13 @@ class Parsers {
                                     )
                                 )
                             )
-//                            TimetableData(
-//                                className = parentSchoolClass.name,
-//                                entries = listOf(
-//                                    TimetableDataEntry(
-//                                        it3.lesson.subject.shortName,
-//                                        it3.classRooms[0].shortName,
-//                                        it3.lesson.teacher[0].name,
-//                                        classesInGroups.toList(),
-//                                        it3.lesson.durationPeriod,
-//                                        it3.day.shortName,
-//                                        it3.period,
-//                                        it3.lesson.durationPeriod + it3.period - 1,
-//                                        it3.lesson.group.find { it4 -> it4.schoolClass == parentSchoolClass }?.name
-//                                            ?: "Brak danych",
-//                                        it3.day.id.replace("*", "").toInt()
-//                                    )
-//                                )
-//                            )
                         )
                     }
                 }
         }
+
+
+
         allSchoolClasses.forEach { className ->
             val mut = mutableListOf<TimetableDataEntry>()
             lessonsSorted.forEach { it2 ->
@@ -202,8 +185,30 @@ class Parsers {
                     mut.add(it.value)
                 }
             }
-            Log.i(className.name, mut.toString())
-            timetableData.add(TimetableData(className = className.name, entries = mut.toList()))
+
+            val sortByDay: MutableList<TimetableDay> = mutableListOf()
+
+            for (s in listOf("Pn", "Wt", "Śr", "Czw", "Pi")) {
+                val sortByLessonNumber: MutableList<TimetableLessons> = mutableListOf()
+                for (i in 0..10) {
+                    sortByLessonNumber.add(TimetableLessons(i, mut.filter { it2 ->
+                        UseCases().between(
+                            i,
+                            it2.lessonFrom,
+                            it2.lessonTo
+                        ) && it2.dayName == s
+                    }))
+                }
+                Log.i("TExt", sortByLessonNumber.toString())
+                sortByDay.add(TimetableDay(s, sortByLessonNumber.toList()))
+            }
+
+            timetableData.add(
+                TimetableData(
+                    className = className.name,
+                    day = sortByDay
+                )
+            )
         }
         return timetableData
     }

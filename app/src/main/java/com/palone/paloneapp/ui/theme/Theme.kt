@@ -11,7 +11,7 @@ private val DarkColorPalette = darkColors(
     primary = Color(0xFF6F6F6F),
     primaryVariant = Color(0xFFFCFCFC),//subs elements
     secondary = Color(0xFF9B2720),
-    background = Color(0xFFF9F1EF),
+    background = Color(0xFFF9F1EF),//Light Pink
     surface = Color(0xFF9B2720), //TEXT COLOR
     onBackground = Color(0xFFF9F1EF)
 )

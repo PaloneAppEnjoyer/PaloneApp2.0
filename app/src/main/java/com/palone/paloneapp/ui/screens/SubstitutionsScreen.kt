@@ -31,8 +31,8 @@ import com.palone.paloneapp.data.models.SubstitutionDataEntry
 import com.palone.paloneapp.ui.SubstitutionsViewModel
 import com.palone.paloneapp.ui.components.MainFloatingActionButton
 import com.palone.paloneapp.ui.components.TopBar
-import com.palone.paloneapp.ui.components.home_screen.FilterDialog
-import com.palone.paloneapp.ui.components.home_screen.SubstitutionElement
+import com.palone.paloneapp.ui.components.substitutions_screen.FilterDialog
+import com.palone.paloneapp.ui.components.substitutions_screen.SubstitutionElement
 
 
 @Composable

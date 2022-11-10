@@ -26,6 +26,18 @@ class UseCases {
         return TimetableDataProvider().getRemoteTimetableData(timetableVersion)
     }
 
+    fun between(value: Int, from: Int?, to: Int?): Boolean {
+        if (from == null) {
+            return false
+        }
+        if (to == null) {
+            return true
+        }
+        if (value >= from && value <= to)
+            return true
+        return false
+    }
+
     fun saveTimetableDataToLocalJsonFile(
         timetableData: List<TimetableData>,
         filePath: String,

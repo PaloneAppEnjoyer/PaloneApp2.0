@@ -1,4 +1,4 @@
-package com.palone.paloneapp.ui.components.home_screen
+package com.palone.paloneapp.ui.components.substitutions_screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

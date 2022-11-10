@@ -1,4 +1,4 @@
-package com.palone.paloneapp.ui.components.home_screen
+package com.palone.paloneapp.ui.components.substitutions_screen
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -41,13 +41,13 @@ fun SubstitutionElement(substitutionData: SubstitutionData) {
                 }
 
             Column(modifier = Modifier.padding(10.dp)) {
-                substitutionData.entries?.forEach {
+                substitutionData.entries.forEach {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = it.lessons ?: "", fontSize = 30.sp)
+                        Text(text = it.lessons, fontSize = 30.sp)
                         Spacer(modifier = Modifier.width(5.dp))
                         Column(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalAlignment = if (it.teacherReplacement?.contains("W tym dniu nie ma żadnych") == true || it.teacherReplacement?.contains(
+                            horizontalAlignment = if (it.teacherReplacement.contains("W tym dniu nie ma żadnych") == true || it.teacherReplacement.contains(
                                     "Brak informacji"
                                 ) == true
                             ) Alignment.CenterHorizontally else Alignment.Start

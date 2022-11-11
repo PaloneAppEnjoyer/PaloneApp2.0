@@ -8,6 +8,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -56,11 +57,14 @@ fun TimetableElement(
                 }
 
                 Column(verticalArrangement = Arrangement.spacedBy(7.dp)) {
-                    data.forEach {
+                    data.sortedBy { it.groupName }.forEach {
                         Column(verticalArrangement = Arrangement.spacedBy(1.dp)) {
                             Row(
                                 horizontalArrangement = Arrangement.spacedBy(5.dp),
-                                verticalAlignment = Alignment.CenterVertically
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.width(
+                                    LocalConfiguration.current.screenWidthDp.dp - 140.dp
+                                )
                             ) {
                                 Text(
                                     text = it.subjectName,
@@ -68,7 +72,6 @@ fun TimetableElement(
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colors.secondary
                                 )
-                                Text(text = it.classroomsName, fontSize = 17.sp)
 
                             }
                             Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
@@ -78,6 +81,7 @@ fun TimetableElement(
                                     color = MaterialTheme.colors.primary
                                 )
                                 Text(text = it.groupName, color = MaterialTheme.colors.primary)
+                                Text(text = it.classroomsName, fontSize = 17.sp)
                             }
                         }
                     }

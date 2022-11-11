@@ -6,10 +6,11 @@ import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarHostState
 
 data class TimetableScreenUiState(
-    val selectedSchoolClass: String = "",
+    val selectedSchoolClass: String = "4ftg",
+    val selectedDay: String = "Pn",
     val isLoading: Boolean = false,
     val errorMessage: String = "",
-    val timetableList: List<TimetableData>? = null,
+    val lessonsList: List<TimetableLessons> = emptyList(),
     val scaffoldState: ScaffoldState = ScaffoldState(
         DrawerState(DrawerValue.Closed),
         SnackbarHostState()

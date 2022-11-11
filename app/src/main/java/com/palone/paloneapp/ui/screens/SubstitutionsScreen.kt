@@ -1,7 +1,7 @@
 package com.palone.paloneapp.ui.screens
 
 import android.util.Log
-import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,10 +31,11 @@ import com.palone.paloneapp.data.models.SubstitutionDataEntry
 import com.palone.paloneapp.ui.SubstitutionsViewModel
 import com.palone.paloneapp.ui.components.MainFloatingActionButton
 import com.palone.paloneapp.ui.components.TopBar
-import com.palone.paloneapp.ui.components.substitutions_screen.FilterDialog
+import com.palone.paloneapp.ui.components.substitutions_screen.QueryFilterDialog
 import com.palone.paloneapp.ui.components.substitutions_screen.SubstitutionElement
 
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun SubstitutionsScreen(viewModel: SubstitutionsViewModel, navHostController: NavHostController) {
     Scaffold(
@@ -116,13 +117,17 @@ fun SubstitutionsScreen(viewModel: SubstitutionsViewModel, navHostController: Na
                             )
                         )
                     viewModel.uiState.collectAsState().value.filteredSubstitutionsList?.forEach {
-                        SubstitutionElement(substitutionData = it)
+                        AnimatedContent(
+                            targetState = it,
+                            transitionSpec = { scaleIn() with fadeOut() }) { scope ->
+                            SubstitutionElement(substitutionData = scope)
+                        }
                     }
                 }
             }
         }
     }
     if (viewModel.uiState.collectAsState().value.shouldShowFilterDialog)
-        FilterDialog(viewModel = viewModel)
+        QueryFilterDialog(viewModel = viewModel)
 
 }

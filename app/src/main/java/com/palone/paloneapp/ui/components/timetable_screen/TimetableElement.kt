@@ -17,7 +17,7 @@ import com.palone.paloneapp.data.models.TimetableDataEntry
 @Composable
 fun TimetableElement(
     data: List<TimetableDataEntry>,
-    modifier: Modifier = Modifier, lessonNumber: Int
+    modifier: Modifier = Modifier, lessonNumber: Int, showSchoolClass: Boolean = false
 ) {
     if (data.isNotEmpty())
         Card(
@@ -82,6 +82,7 @@ fun TimetableElement(
                                 )
                                 Text(text = it.groupName, color = MaterialTheme.colors.primary)
                                 Text(text = it.classroomsName, fontSize = 17.sp)
+                                if (showSchoolClass) it.schoolClassNames.forEach { Text(text = it) }
                             }
                         }
                     }

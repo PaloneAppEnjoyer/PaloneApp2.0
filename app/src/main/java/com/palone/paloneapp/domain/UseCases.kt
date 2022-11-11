@@ -65,7 +65,7 @@ class UseCases {
         val sortedData: MutableList<SubstitutionData> = mutableListOf()
         data.forEach {
             Log.i("", "$it")
-            if ((it.className.contains(query) == true))
+            if ((it.className.contains(query)))
                 sortedData.add(it)
         }
         return sortedData

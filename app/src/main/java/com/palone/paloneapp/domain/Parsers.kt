@@ -1,6 +1,5 @@
 package com.palone.paloneapp.domain
 
-import android.util.Log
 import com.palone.paloneapp.data.models.*
 import com.palone.paloneapp.data.models.responses.timetable.TimetableRemoteDataResponse
 import com.palone.paloneapp.data.models.timetableVariables.*
@@ -199,7 +198,6 @@ class Parsers {
                         ) && it2.dayName == s
                     }))
                 }
-                Log.i("TExt", sortByLessonNumber.toString())
                 sortByDay.add(TimetableDay(s, sortByLessonNumber.toList()))
             }
 

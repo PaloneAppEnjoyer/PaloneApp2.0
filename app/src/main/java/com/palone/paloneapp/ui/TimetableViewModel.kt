@@ -31,15 +31,40 @@ class TimetableViewModel : MainViewModel() {
         _uiState.value.scaffoldState.drawerState.close()
     }
 
+    fun setThisGroupHidden(group: String) {
+        val currentHiddenGroups = _uiState.value.hiddenGroups.toMutableList()
+        currentHiddenGroups.add(group)
+        _uiState.update {
+            it.copy(
+                hiddenGroups = currentHiddenGroups,
+                lessonsList = getTimetableLessons()
+            )
+        }
+    }
+
+    fun unsetThisGroupHidden(group: String) {
+        val currentHiddenGroups = _uiState.value.hiddenGroups.toMutableList()
+        currentHiddenGroups.remove(group)
+        _uiState.update {
+            it.copy(
+                hiddenGroups = currentHiddenGroups,
+                lessonsList = getTimetableLessons()
+            )
+        }
+    }
+
     fun getAllSchoolClassesNames(): List<String> {
         return allSchoolClassNames.toList()
+    }
+
+    fun getRawTimetableList(): List<TimetableData> {
+        return timetableList
     }
 
     fun setSchoolClassQuery(schoolClassName: String) {
         _uiState.update { it.copy(selectedSchoolClass = schoolClassName, isLoading = true) }
         _uiState.update { it.copy(lessonsList = getTimetableLessons(), isLoading = false) }
     }
-
 
     private fun getTimetableLessons(): List<TimetableLessons> {
         timetableList.sortedBy { it.className }

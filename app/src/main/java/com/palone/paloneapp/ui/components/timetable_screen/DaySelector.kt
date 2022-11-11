@@ -10,57 +10,96 @@ import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.palone.paloneapp.ui.TimetableViewModel
 
 @Composable
-fun DaySelector(viewModel: TimetableViewModel, modifier: Modifier = Modifier) {
-    val days = listOf("Pn", "Wt", "Śr", "Czw", "Pi")
-    Column(
-        modifier = modifier
-            .width(50.dp)
-            .fillMaxHeight(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        days.forEach {
-            val cornerShape =
-                when (it) {
-                    days.first() -> RoundedCornerShape(topStart = 20.dp)
-                    days.last() -> RoundedCornerShape(bottomStart = 20.dp)
-                    else -> RoundedCornerShape(0.dp)
-                }
-            val borderColor = BorderStroke(
-                0.5.dp,
-                animateColorAsState(
-                    targetValue = if (it == viewModel.uiState.collectAsState().value.selectedDay) MaterialTheme.colors.secondary else MaterialTheme.colors.primaryVariant,
-                    animationSpec = tween(200)
-                ).value
+fun DaySelector(
+    modifier: Modifier = Modifier,
+    selectedDay: String,
+    onDaySelected: (String) -> Unit = {},
+    isHorizontal: Boolean = false
+) {
+    if (isHorizontal)
+        Row(
+            modifier = modifier
+                .height(50.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            DaySelectorDisplayData(
+                isHorizontal = isHorizontal,
+                selectedDay = selectedDay,
+                onDaySelected = onDaySelected
             )
-            val backgroundColor =
-                if (it == viewModel.uiState.collectAsState().value.selectedDay) MaterialTheme.colors.background else MaterialTheme.colors.primaryVariant
+        }
+    else
+        Column(
+            modifier = modifier
+                .width(50.dp)
+                .fillMaxHeight(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            DaySelectorDisplayData(
+                isHorizontal = isHorizontal,
+                selectedDay = selectedDay,
+                onDaySelected = onDaySelected
+            )
+        }
+}
 
-            Card(
-                shape = cornerShape,
-                modifier = Modifier
-                    .clickable { viewModel.selectDay(day = it) }
-                    .height(70.dp)
-                    .width(50.dp),
-                backgroundColor = backgroundColor,
-                contentColor = MaterialTheme.colors.secondary,
-                elevation = 10.dp,
-                border = borderColor
+@Composable
+fun DaySelectorDisplayData(
+    isHorizontal: Boolean,
+    days: List<String> = listOf("Pn", "Wt", "Śr", "Czw", "Pi"),
+    selectedDay: String,
+    onDaySelected: (String) -> Unit = {}
+) {
+    days.forEach {
+        val cornerShape = if (isHorizontal) when (it) {
+            days.first() -> RoundedCornerShape(bottomStart = 20.dp, topStart = 20.dp)
+            days.last() -> RoundedCornerShape(bottomEnd = 20.dp, topEnd = 20.dp)
+            else -> RoundedCornerShape(0.dp)
+        }
+        else
+            when (it) {
+                days.first() -> RoundedCornerShape(topStart = 20.dp)
+                days.last() -> RoundedCornerShape(bottomStart = 20.dp)
+                else -> RoundedCornerShape(0.dp)
+            }
+
+
+        val borderColor = BorderStroke(
+            0.5.dp,
+            animateColorAsState(
+                targetValue = if (it == selectedDay) MaterialTheme.colors.secondary else MaterialTheme.colors.primaryVariant,
+                animationSpec = tween(200)
+            ).value
+        )
+        val backgroundColor =
+            if (it == selectedDay) MaterialTheme.colors.background else MaterialTheme.colors.primaryVariant
+
+        Card(
+            shape = cornerShape,
+            modifier = Modifier
+                .clickable { onDaySelected(it) }
+                .height(70.dp)
+                .width(50.dp),
+            backgroundColor = backgroundColor,
+            contentColor = MaterialTheme.colors.secondary,
+            elevation = 10.dp,
+            border = borderColor
+        ) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(text = it)
-                }
+                Text(text = it)
             }
         }
     }
+
 }

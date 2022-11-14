@@ -12,6 +12,9 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInWindow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -19,6 +22,7 @@ fun DaySelector(
     modifier: Modifier = Modifier,
     selectedDay: String,
     onDaySelected: (String) -> Unit = {},
+    getCoordinates: (Dp) -> Unit = {},
     isHorizontal: Boolean = false
 ) {
     if (isHorizontal)
@@ -32,21 +36,20 @@ fun DaySelector(
             DaySelectorDisplayData(
                 isHorizontal = isHorizontal,
                 selectedDay = selectedDay,
-                onDaySelected = onDaySelected
+                onDaySelected = onDaySelected, getCoordinates = getCoordinates
             )
         }
     else
         Column(
             modifier = modifier
-                .width(50.dp)
-                .fillMaxHeight(),
+                .width(50.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             DaySelectorDisplayData(
                 isHorizontal = isHorizontal,
                 selectedDay = selectedDay,
-                onDaySelected = onDaySelected
+                onDaySelected = onDaySelected, getCoordinates = getCoordinates
             )
         }
 }
@@ -55,7 +58,7 @@ fun DaySelector(
 fun DaySelectorDisplayData(
     isHorizontal: Boolean,
     days: List<String> = listOf("Pn", "Wt", "Śr", "Czw", "Pi"),
-    selectedDay: String,
+    selectedDay: String, getCoordinates: (Dp) -> Unit = {},
     onDaySelected: (String) -> Unit = {}
 ) {
     days.forEach {
@@ -87,7 +90,8 @@ fun DaySelectorDisplayData(
             modifier = Modifier
                 .clickable { onDaySelected(it) }
                 .height(70.dp)
-                .width(50.dp),
+                .width(50.dp)
+                .onGloballyPositioned { coords -> if (it == days.first()) getCoordinates(coords.positionInWindow().y.dp) },
             backgroundColor = backgroundColor,
             contentColor = MaterialTheme.colors.secondary,
             elevation = 10.dp,

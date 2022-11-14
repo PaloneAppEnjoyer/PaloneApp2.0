@@ -7,7 +7,6 @@ import com.palone.paloneapp.data.SubstitutionsDataProvider
 import com.palone.paloneapp.data.TimetableDataProvider
 import com.palone.paloneapp.data.models.SubstitutionData
 import com.palone.paloneapp.data.models.TimetableData
-import com.palone.paloneapp.data.models.responses.ttviewer.TtViewerRemoteDataResponse
 import kotlinx.datetime.LocalDate
 import java.io.File
 import java.io.FileReader
@@ -18,12 +17,8 @@ class UseCases {
         return SubstitutionsDataProvider().getRemoteData(localDate)
     }
 
-    suspend fun getTtViewerData(): TtViewerRemoteDataResponse {
-        return TimetableDataProvider().getRemoteTtViewerData()
-    }
-
-    suspend fun getTimetableData(timetableVersion: Int): List<TimetableData> {
-        return TimetableDataProvider().getRemoteTimetableData(timetableVersion)
+    suspend fun getTimetableData(filePath: String): List<TimetableData> {
+        return TimetableDataProvider().getTimetableData(filePath)
     }
 
     fun between(value: Int, from: Int?, to: Int?): Boolean {
@@ -53,8 +48,12 @@ class UseCases {
         filePath: String,
         fileName: String,
     ): List<TimetableData> {
-        val listType = object : TypeToken<List<TimetableData>>() {}.type
-        return Gson().fromJson(FileReader(filePath + fileName), listType)
+        return try {
+            val listType = object : TypeToken<List<TimetableData>>() {}.type
+            Gson().fromJson(FileReader(filePath + fileName), listType)
+        } catch (e: Exception) {
+            listOf()
+        }
     }
 
 

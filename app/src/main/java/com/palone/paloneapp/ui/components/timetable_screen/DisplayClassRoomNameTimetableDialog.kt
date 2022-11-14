@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.palone.paloneapp.data.models.TimetableData
 import com.palone.paloneapp.data.models.TimetableDataEntry
+import java.util.*
 
 @RequiresApi(Build.VERSION_CODES.N)
 @Composable
@@ -24,11 +25,14 @@ fun DisplayClassRoomNameTimetableDialog(
     data: List<TimetableData>,
     onDismissRequest: () -> Unit = {}
 ) {
+    val calendarTodayDayOfWeek = remember {
+        mutableStateOf(Calendar.getInstance().get(Calendar.DAY_OF_WEEK))
+    }
     val query = remember { mutableStateOf("") }
     val selectedDay = remember {
         mutableStateOf("Pn")
     }
-    val dataToDisplay: MutableMap<Int, MutableList<TimetableDataEntry>> = mutableMapOf()
+    val dataToDisplay: MutableList<Pair<Int, MutableList<TimetableDataEntry>>> = mutableListOf()
     Dialog(onDismissRequest = onDismissRequest) {
         Column(
             verticalArrangement = Arrangement.spacedBy(5.dp),
@@ -40,7 +44,7 @@ fun DisplayClassRoomNameTimetableDialog(
         ) {
             DaySelector(
                 selectedDay = selectedDay.value,
-                onDaySelected = { selectedDay.value = it;dataToDisplay.values.clear() },
+                onDaySelected = { selectedDay.value = it;dataToDisplay.clear() },
                 isHorizontal = true
             )
             TextField(value = query.value, onValueChange = { query.value = it })
@@ -49,17 +53,27 @@ fun DisplayClassRoomNameTimetableDialog(
                     it1.day.filter { it.dayNameShorted == selectedDay.value }.forEach { it2 ->
                         it2.lessons.forEach { it3 ->
                             it3.entries.forEach { it4 ->
-                                if (it4.classroomsName == query.value) dataToDisplay.put(
-                                    it3.lessonNumber,
-                                    listOf(it4).toMutableList()
+                                if (it4.classroomsName.contains(query.value)) dataToDisplay.add(
+                                    Pair(
+                                        it3.lessonNumber,
+                                        listOf(it4).toMutableList()
+                                    )
                                 )
                             }
                         }
                     }
                 }
-            else dataToDisplay.values.clear()
+            else dataToDisplay.clear()
             for (i in 0..10) {
-                dataToDisplay[i]?.let { TimetableElement(data = it, lessonNumber = i) }
+                dataToDisplay.filter { it.first == i }.forEach {
+                    TimetableElement(
+                        data = it.second,
+                        lessonNumber = i,
+                        showSchoolClass = true,
+                        currentLesson = -1.0f,
+                        todayDayInWeek = calendarTodayDayOfWeek.value
+                    )
+                }
             }
 
         }

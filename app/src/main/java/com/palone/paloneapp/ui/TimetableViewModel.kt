@@ -7,11 +7,13 @@ import com.palone.paloneapp.data.models.TimetableData
 import com.palone.paloneapp.data.models.TimetableLessons
 import com.palone.paloneapp.data.models.TimetableScreenUiState
 import com.palone.paloneapp.domain.UseCases
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.*
 
 class TimetableViewModel : MainViewModel() {
     private val _uiState = MutableStateFlow(TimetableScreenUiState())
@@ -89,24 +91,58 @@ class TimetableViewModel : MainViewModel() {
         _uiState.update { it.copy(lessonsList = getTimetableLessons(), isLoading = false) }
     }
 
-    init {
-        viewModelScope.launch {
-            val timetableData = UseCases().getTimetableData(
-                UseCases().getTtViewerData().response?.regular?.default_num?.toInt() ?: 100
-            )
-            UseCases().saveTimetableDataToLocalJsonFile(
-                timetableData = timetableData,
-                filePath = directory,
-                "latest_timetable_data.json"
-            ) {
-                refreshTimetableWithNewData(
-                    UseCases().getTimetableDataFromLocalJsonFile(
-                        directory,
-                        "latest_timetable_data.json"
-                    )
-                )
-            }
+    private suspend fun syncCurrentLessonNumberWithCurrentTime() {
+        while (true) {
+            val calendar = Calendar.getInstance()
+            val currentLesson =
+                when (calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE)) {
+                    in 425..470 -> 0.0f
+                    in 471..474 -> 0.5f
+
+                    in 475..520 -> 1.0f
+                    in 521..524 -> 1.5f
+
+                    in 525..570 -> 2.0f
+                    in 571..574 -> 2.5f
+
+                    in 575..620 -> 3.0f
+                    in 621..624 -> 3.5f
+
+                    in 625..670 -> 4.0f
+
+                    in 671..684 -> 420.0f
+
+                    in 685..730 -> 5.0f
+                    in 731..734 -> 5.5f
+
+                    in 735..780 -> 6.0f
+                    in 781..784 -> 6.5f
+
+                    in 785..830 -> 7.0f
+                    in 831..834 -> 7.5f
+
+                    in 835..880 -> 8.0f
+                    in 881..884 -> 8.5f
+
+                    in 885..930 -> 9.0f
+                    in 931..934 -> 9.5f
+
+                    in 935..980 -> 10.0f
+                    else -> -1.0f
+                }
+            if (currentLesson != _uiState.value.currentLesson)
+                _uiState.update { it.copy(currentLesson = currentLesson) }
+            delay(1000)
         }
 
+    }
+
+    init {
+        viewModelScope.launch {
+            refreshTimetableWithNewData(
+                UseCases().getTimetableData(directory)
+            )
+            syncCurrentLessonNumberWithCurrentTime()
+        }
     }
 }

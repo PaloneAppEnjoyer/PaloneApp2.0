@@ -28,12 +28,16 @@ import com.palone.paloneapp.ui.components.DrawerItem
 import com.palone.paloneapp.ui.components.MainFloatingActionButton
 import com.palone.paloneapp.ui.components.TopBar
 import com.palone.paloneapp.ui.components.timetable_screen.*
+import java.util.*
 
 @RequiresApi(Build.VERSION_CODES.N)
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun TimetableScreen(viewModel: TimetableViewModel, navHostController: NavHostController) {
     val shouldShowSchoolClassFilterDialog = remember { mutableStateOf(false) }
+    val calendarTodayDayOfWeek = remember {
+        mutableStateOf(Calendar.getInstance().get(Calendar.DAY_OF_WEEK))
+    }
     if (shouldShowSchoolClassFilterDialog.value) ClassFilterDialog(viewModel = viewModel) {
         shouldShowSchoolClassFilterDialog.value = false
     }
@@ -104,26 +108,37 @@ fun TimetableScreen(viewModel: TimetableViewModel, navHostController: NavHostCon
                                     )
                                 },
                                 modifier = Modifier
-                                    .padding(top = 5.dp), lessonNumber = scope.lessonNumber
+                                    .padding(top = 5.dp),
+                                lessonNumber = scope.lessonNumber,
+                                currentLesson = viewModel.uiState.collectAsState().value.currentLesson,
+                                todayDayInWeek = calendarTodayDayOfWeek.value
                             )
                         }
                     }
                 }
             }
-            DaySelector(
-                selectedDay = viewModel.uiState.collectAsState().value.selectedDay,
-                onDaySelected = { viewModel.selectDay(it) },
-                modifier = Modifier.offset(
-                    x = LocalConfiguration.current.screenWidthDp.dp - 50.dp
-                )
-            )
-            if (viewModel.uiState.collectAsState().value.hiddenGroups.isNotEmpty())
-                FilterActiveButtonFloatingActionButton(
-                    modifier = Modifier.offset(
-                        x = LocalConfiguration.current.screenWidthDp.dp - 45.dp,
-                        y = (LocalConfiguration.current.screenWidthDp.dp / 2) + 10.dp
+            Column(
+                modifier = Modifier
+                    .offset(
+                        x = LocalConfiguration.current.screenWidthDp.dp - 50.dp
                     )
-                ) { shouldShowHideGroupDialog.value = true }
+                    .fillMaxHeight(), verticalArrangement = Arrangement.Center
+            ) {
+                if (viewModel.uiState.collectAsState().value.hiddenGroups.isNotEmpty())
+                    FilterActiveButtonFloatingActionButton(
+                        modifier = Modifier
+                            .size(20.dp)
+                            .offset(x = 18.dp)
+                    ) { shouldShowHideGroupDialog.value = true }
+                else
+                    Spacer(modifier = Modifier.size(20.dp))
+                DaySelector(
+                    selectedDay = viewModel.uiState.collectAsState().value.selectedDay,
+                    onDaySelected = { viewModel.selectDay(it) },
+                )
+            }
+
+
         }
     }
 }

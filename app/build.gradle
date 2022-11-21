@@ -63,12 +63,20 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging-ktx:23.1.0'
     implementation 'com.google.firebase:firebase-analytics-ktx:21.2.0'
 
+    //color picker
+    implementation 'com.github.skydoves:colorpicker-compose:1.0.0'
+    implementation 'com.godaddy.android.colorpicker:compose-color-picker:0.5.1'
+
+    // with Android ColorInt extensions
+    implementation 'com.godaddy.android.colorpicker:compose-color-picker-android:0.5.1'
+
+
     //in app messaging
     implementation 'com.google.firebase:firebase-inappmessaging-display-ktx'
     implementation 'com.google.firebase:firebase-analytics-ktx'
 
     //webview
-    implementation ('com.google.accompanist:accompanist-webview:0.27.0')
+    implementation('com.google.accompanist:accompanist-webview:0.27.0')
     // Kotlin + coroutines
     implementation("androidx.work:work-runtime-ktx:$work_version")
 

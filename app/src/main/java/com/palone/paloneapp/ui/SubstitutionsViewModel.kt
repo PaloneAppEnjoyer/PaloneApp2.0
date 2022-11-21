@@ -2,9 +2,10 @@ package com.palone.paloneapp.ui
 
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
-import com.palone.paloneapp.data.ScreensProperties
-import com.palone.paloneapp.data.models.SubstitutionsScreenUiState
-import com.palone.paloneapp.domain.UseCases
+import com.palone.paloneapp.domain.htmlParser.HtmlParserImpl
+import com.palone.paloneapp.feature_screen_substitutions.data.ScreensProperties
+import com.palone.paloneapp.feature_screen_substitutions.data.models.SubstitutionsScreenUiState
+import com.palone.paloneapp.feature_screen_substitutions.domain.substitutionsDataManager.SubstitutionsDataManagerImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,6 +15,8 @@ import kotlinx.datetime.LocalDate
 import java.util.*
 
 class SubstitutionsViewModel : MainViewModel() {
+    private val substitutionsDataManager = SubstitutionsDataManagerImpl()
+    private val htmlParser = HtmlParserImpl()
     private val _uiState = MutableStateFlow(SubstitutionsScreenUiState())
     val uiState: StateFlow<SubstitutionsScreenUiState> = _uiState.asStateFlow()
     private val _currentCalendar = MutableStateFlow(Calendar.getInstance())
@@ -52,7 +55,10 @@ class SubstitutionsViewModel : MainViewModel() {
             _uiState.update { currentState ->
                 currentState.copy(
                     isLoading = false,
-                    substitutionsList = UseCases().getSubstitutionsDataWithLocalDate(localDate),
+                    substitutionsList = substitutionsDataManager.getSubstitutionsDataWithLocalDate(
+                        htmlParser = htmlParser,
+                        localDate
+                    ),
                 )
             }
             onFinish()
@@ -65,7 +71,7 @@ class SubstitutionsViewModel : MainViewModel() {
             currentState.copy(
                 isLoading = false,
                 filteredSubstitutionsList = _uiState.value.substitutionsList?.let {
-                    UseCases().getFilteredSubstitutionDataByQuery(
+                    substitutionsDataManager.getFilteredSubstitutionDataByQuery(
                         it, query
                     )
                 }
@@ -86,27 +92,6 @@ class SubstitutionsViewModel : MainViewModel() {
             _uiState.value.selectedLocalDate
         ) {
             refreshFilteredSubstitutionsWithQuery()
-//            viewModelScope.launch {
-//                val timetableData =
-//                    UseCases().getTimetableData(
-//                        UseCases().getTtViewerData().response?.regular?.default_num?.toInt() ?: 100
-//                    )
-//
-//                UseCases().saveTimetableDataToLocalJsonFile(
-//                    timetableData = timetableData,
-//                    filePath = directory,
-//                    "latest_timetable_data.json"
-//                ) {
-//                    UseCases().getTimetableDataFromLocalJsonFile(
-//                        filePath = directory,
-//                        "latest_timetable_data.json"
-//                    ).forEach { pog ->
-//                        pog.entries.filter { it.dayName == "Pn" }
-//                            .forEach { Log.i("Timetable check", pog.toString()) }
-//                    }
-//                }
-//            }// For testing purposes
-//
         }
 
     }

@@ -1,11 +1,12 @@
 package com.palone.paloneapp.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+
 
 private val DarkColorPalette = darkColors(
     primary = Color(0xFF6F6F6F),
@@ -35,16 +36,9 @@ private val LightColorPalette = lightColors(
 
 @Composable
 fun PaloneAppTheme(
-    forceDarkTheme: Boolean = false,
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    colors: Colors,
     content: @Composable () -> Unit
 ) {
-    val colors = if (darkTheme || forceDarkTheme) {
-        DarkColorPalette
-    } else {
-        LightColorPalette
-    }
-
     MaterialTheme(
         colors = colors,
         typography = Typography,

@@ -2,11 +2,12 @@ package com.palone.paloneapp.ui
 
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
-import com.palone.paloneapp.data.ScreensProperties
-import com.palone.paloneapp.data.models.TimetableData
-import com.palone.paloneapp.data.models.TimetableLessons
-import com.palone.paloneapp.data.models.TimetableScreenUiState
-import com.palone.paloneapp.domain.UseCases
+import com.palone.paloneapp.domain.timetableDataResponseToListOfTimetableDataParser.TimetableDataResponseToListOfTimetableDataParserImpl
+import com.palone.paloneapp.feature_screen_substitutions.data.ScreensProperties
+import com.palone.paloneapp.feature_screen_timetable.data.models.TimetableData
+import com.palone.paloneapp.feature_screen_timetable.data.models.TimetableLessons
+import com.palone.paloneapp.feature_screen_timetable.data.models.TimetableScreenUiState
+import com.palone.paloneapp.feature_screen_timetable.domain.timetableDataManager.TimetableDataManagerImpl
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,6 +17,8 @@ import kotlinx.coroutines.launch
 import java.util.*
 
 class TimetableViewModel : MainViewModel() {
+    private val timetableDataManager = TimetableDataManagerImpl()
+    private val timetableDataParser = TimetableDataResponseToListOfTimetableDataParserImpl()
     private val _uiState = MutableStateFlow(TimetableScreenUiState())
     val uiState: StateFlow<TimetableScreenUiState> = _uiState.asStateFlow()
 
@@ -140,7 +143,7 @@ class TimetableViewModel : MainViewModel() {
     init {
         viewModelScope.launch {
             refreshTimetableWithNewData(
-                UseCases().getTimetableData(directory)
+                timetableDataManager.getTimetableData(directory, timetableDataParser)
             )
             syncCurrentLessonNumberWithCurrentTime()
         }

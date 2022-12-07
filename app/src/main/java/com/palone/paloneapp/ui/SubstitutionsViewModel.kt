@@ -3,9 +3,9 @@ package com.palone.paloneapp.ui
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.palone.paloneapp.domain.htmlParser.HtmlParserImpl
-import com.palone.paloneapp.feature_screen_substitutions.data.ScreensProperties
-import com.palone.paloneapp.feature_screen_substitutions.data.models.SubstitutionsScreenUiState
-import com.palone.paloneapp.feature_screen_substitutions.domain.substitutionsDataManager.SubstitutionsDataManagerImpl
+import com.palone.paloneapp.screen_substitutions.data.ScreensProperties
+import com.palone.paloneapp.screen_substitutions.data.models.SubstitutionsScreenUiState
+import com.palone.paloneapp.screen_substitutions.domain.substitutionsDataManager.SubstitutionsDataManagerImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

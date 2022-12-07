@@ -2,25 +2,44 @@ package com.palone.paloneapp.ui
 
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
+import com.palone.paloneapp.domain.htmlParser.HtmlParserImpl
+import com.palone.paloneapp.domain.isBetween
+import com.palone.paloneapp.domain.timeManager.TimeManagerImpl
 import com.palone.paloneapp.domain.timetableDataResponseToListOfTimetableDataParser.TimetableDataResponseToListOfTimetableDataParserImpl
-import com.palone.paloneapp.feature_screen_substitutions.data.ScreensProperties
-import com.palone.paloneapp.feature_screen_timetable.data.models.TimetableData
-import com.palone.paloneapp.feature_screen_timetable.data.models.TimetableLessons
-import com.palone.paloneapp.feature_screen_timetable.data.models.TimetableScreenUiState
-import com.palone.paloneapp.feature_screen_timetable.domain.timetableDataManager.TimetableDataManagerImpl
+import com.palone.paloneapp.screen_substitutions.data.ScreensProperties
+import com.palone.paloneapp.screen_substitutions.data.models.SubstitutionData
+import com.palone.paloneapp.screen_substitutions.data.models.SubstitutionDataEntry
+import com.palone.paloneapp.screen_substitutions.domain.substitutionsDataManager.SubstitutionsDataManagerImpl
+import com.palone.paloneapp.screen_timetable.data.models.TimetableData
+import com.palone.paloneapp.screen_timetable.data.models.TimetableLessons
+import com.palone.paloneapp.screen_timetable.data.models.TimetableScreenUiState
+import com.palone.paloneapp.screen_timetable.domain.timetableDataManager.TimetableDataManagerImpl
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
 import java.util.*
 
 class TimetableViewModel : MainViewModel() {
     private val timetableDataManager = TimetableDataManagerImpl()
     private val timetableDataParser = TimetableDataResponseToListOfTimetableDataParserImpl()
+
+    private val substitutionsDataManager = SubstitutionsDataManagerImpl()
+    private val htmlParser = HtmlParserImpl()
+
+
     private val _uiState = MutableStateFlow(TimetableScreenUiState())
     val uiState: StateFlow<TimetableScreenUiState> = _uiState.asStateFlow()
+
+    private lateinit var substitutionsToday: List<SubstitutionData>
+    private lateinit var substitutionsTomorrow: List<SubstitutionData>
+
+    private val timeManager = TimeManagerImpl()
+    private val currentDate = timeManager.getCurrentDate()
+    private val tomorrowDate = timeManager.getTomorrowDate()
 
     private var timetableList: List<TimetableData> = emptyList()
     private var allSchoolClassNames: MutableList<String> = mutableListOf()
@@ -94,6 +113,35 @@ class TimetableViewModel : MainViewModel() {
         _uiState.update { it.copy(lessonsList = getTimetableLessons(), isLoading = false) }
     }
 
+    fun getSubstitutionsForSelectedLesson(lessonNumber: Int): List<SubstitutionDataEntry> {
+        val substitutionList = mutableListOf<SubstitutionDataEntry>()
+        val data =
+            if (_uiState.value.selectedDay == currentDate.day_of_week_name && substitutionsToday[0].entries[0].teacherReplacement != "  W tym dniu nie ma żadnych zastępstw") substitutionsToday
+            else if (_uiState.value.selectedDay == tomorrowDate.day_of_week_name && substitutionsTomorrow[0].entries[0].teacherReplacement != "  W tym dniu nie ma żadnych zastępstw") substitutionsTomorrow
+            else emptyList()
+        data.forEach {
+            if (it.className == _uiState.value.selectedSchoolClass)
+                it.entries.forEach { it2 ->
+                    if (when (it2.lessons.replace(" ", "").replace("(", "")
+                            .replace(")", "").replace("\n", "").length) {
+                            3 -> lessonNumber.isBetween(
+                                it2.lessons.replace(" ", "").replace("(", "")
+                                    .replace(")", "").replace("\n", "")[0].toString().toInt(),
+                                it2.lessons.replace(" ", "").replace("(", "")
+                                    .replace(")", "").replace("\n", "")[2].toString().toInt()
+                            )
+                            1 -> it2.lessons.replace(" ", "").replace("(", "")
+                                .replace(")", "").replace("\n", "")[0].toString()
+                                .toInt() == lessonNumber
+                            else -> it2.lessons.replace(" ", "").replace("(", "")
+                                .replace(")", "").replace("\n", "") == "Cały dzień"
+                        }
+                    ) substitutionList.add(it2)
+                }
+        }
+        return substitutionList
+    }
+
     private suspend fun syncCurrentLessonNumberWithCurrentTime() {
         while (true) {
             val calendar = Calendar.getInstance()
@@ -142,6 +190,15 @@ class TimetableViewModel : MainViewModel() {
 
     init {
         viewModelScope.launch {
+            _uiState.update { it.copy(todayDate = currentDate) }
+            substitutionsToday = substitutionsDataManager.getSubstitutionsDataWithLocalDate(
+                htmlParser,
+                LocalDate(currentDate.year, currentDate.month, currentDate.day_of_month)
+            )
+            substitutionsTomorrow = substitutionsDataManager.getSubstitutionsDataWithLocalDate(
+                htmlParser,
+                LocalDate(tomorrowDate.year, tomorrowDate.month, tomorrowDate.day_of_month)
+            )
             refreshTimetableWithNewData(
                 timetableDataManager.getTimetableData(directory, timetableDataParser)
             )

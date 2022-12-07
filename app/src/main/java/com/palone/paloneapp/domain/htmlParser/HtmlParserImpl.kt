@@ -1,7 +1,7 @@
 package com.palone.paloneapp.domain.htmlParser
 
-import com.palone.paloneapp.feature_screen_substitutions.data.models.SubstitutionData
-import com.palone.paloneapp.feature_screen_substitutions.data.models.SubstitutionDataEntry
+import com.palone.paloneapp.screen_substitutions.data.models.SubstitutionData
+import com.palone.paloneapp.screen_substitutions.data.models.SubstitutionDataEntry
 
 class HtmlParserImpl : HtmlParserInterface {
     override fun getSubstitutionsFromHtml(rawData: String?): List<SubstitutionData> {

@@ -2,18 +2,18 @@ package com.palone.paloneapp.ui
 
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
-import com.palone.paloneapp.domain.htmlParser.HtmlParserImpl
-import com.palone.paloneapp.domain.isBetween
-import com.palone.paloneapp.domain.timeManager.TimeManagerImpl
-import com.palone.paloneapp.domain.timetableDataResponseToListOfTimetableDataParser.TimetableDataResponseToListOfTimetableDataParserImpl
-import com.palone.paloneapp.screen_substitutions.data.ScreensProperties
-import com.palone.paloneapp.screen_substitutions.data.models.SubstitutionData
-import com.palone.paloneapp.screen_substitutions.data.models.SubstitutionDataEntry
-import com.palone.paloneapp.screen_substitutions.domain.substitutionsDataManager.SubstitutionsDataManagerImpl
-import com.palone.paloneapp.screen_timetable.data.models.TimetableData
-import com.palone.paloneapp.screen_timetable.data.models.TimetableLessons
-import com.palone.paloneapp.screen_timetable.data.models.TimetableScreenUiState
-import com.palone.paloneapp.screen_timetable.domain.timetableDataManager.TimetableDataManagerImpl
+import com.palone.paloneapp.substitutions.data.ScreensProperties
+import com.palone.paloneapp.substitutions.data.models.SubstitutionData
+import com.palone.paloneapp.substitutions.data.models.SubstitutionDataEntry
+import com.palone.paloneapp.substitutions.domain.substitutionsDataManager.SubstitutionsDataManagerImpl
+import com.palone.paloneapp.timetable.data.models.TimetableData
+import com.palone.paloneapp.timetable.data.models.TimetableLessons
+import com.palone.paloneapp.timetable.data.models.TimetableScreenUiState
+import com.palone.paloneapp.timetable.domain.timetableDataManager.TimetableDataManagerImpl
+import com.palone.paloneapp.utils.between
+import com.palone.paloneapp.utils.htmlParser.HtmlParserImpl
+import com.palone.paloneapp.utils.timeManager.TimeManagerImpl
+import com.palone.paloneapp.utils.timetableDataResponseToListOfTimetableDataParser.TimetableDataResponseToListOfTimetableDataParserImpl
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -37,7 +37,7 @@ class TimetableViewModel : MainViewModel() {
     private lateinit var substitutionsToday: List<SubstitutionData>
     private lateinit var substitutionsTomorrow: List<SubstitutionData>
 
-    private val timeManager = TimeManagerImpl()
+    private val timeManager = TimeManagerImpl(Calendar.getInstance())
     private val currentDate = timeManager.getCurrentDate()
     private val tomorrowDate = timeManager.getTomorrowDate()
 
@@ -56,23 +56,27 @@ class TimetableViewModel : MainViewModel() {
     }
 
     fun setThisGroupHidden(group: String) {
+        _uiState.update { it.copy(isLoading = true) }
         val currentHiddenGroups = _uiState.value.hiddenGroups.toMutableList()
         currentHiddenGroups.add(group)
         _uiState.update {
             it.copy(
                 hiddenGroups = currentHiddenGroups,
-                lessonsList = getTimetableLessons()
+                lessonsList = getTimetableLessons(),
+                isLoading = false
             )
         }
     }
 
     fun unsetThisGroupHidden(group: String) {
+        _uiState.update { it.copy(isLoading = true) }
         val currentHiddenGroups = _uiState.value.hiddenGroups.toMutableList()
         currentHiddenGroups.remove(group)
         _uiState.update {
             it.copy(
                 hiddenGroups = currentHiddenGroups,
-                lessonsList = getTimetableLessons()
+                lessonsList = getTimetableLessons(),
+                isLoading = false
             )
         }
     }
@@ -124,7 +128,7 @@ class TimetableViewModel : MainViewModel() {
                 it.entries.forEach { it2 ->
                     if (when (it2.lessons.replace(" ", "").replace("(", "")
                             .replace(")", "").replace("\n", "").length) {
-                            3 -> lessonNumber.isBetween(
+                            3 -> lessonNumber.between(
                                 it2.lessons.replace(" ", "").replace("(", "")
                                     .replace(")", "").replace("\n", "")[0].toString().toInt(),
                                 it2.lessons.replace(" ", "").replace("(", "")

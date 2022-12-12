@@ -58,7 +58,7 @@ fun SubstitutionsScreen(viewModel: SubstitutionsViewModel, navHostController: Na
                 IconButton(onClick = { viewModel.showTextFilterDialog() }) {
                     Icon(Icons.Default.FilterAlt, "Filter")
                 }
-            })
+            })//
         },
         floatingActionButton = {
             MainFloatingActionButton(viewModel = viewModel, navHostController = navHostController)

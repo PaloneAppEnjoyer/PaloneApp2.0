@@ -1,5 +1,6 @@
 package com.palone.paloneapp.substitutions.ui.substitutions_screen
 
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -8,13 +9,14 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.palone.paloneapp.substitutions.data.models.SubstitutionData
 
 @Composable
-fun SubstitutionElement(substitutionData: SubstitutionData) {
+fun SubstitutionElement(substitutionData: SubstitutionData, onLongPress: () -> Unit = {}) {
     Card(
         shape = RoundedCornerShape(10.dp),
         modifier = Modifier
@@ -23,7 +25,11 @@ fun SubstitutionElement(substitutionData: SubstitutionData) {
         backgroundColor = MaterialTheme.colors.primaryVariant,
         contentColor = MaterialTheme.colors.secondary
     ) {
-        Row {
+        Row(modifier = Modifier.pointerInput(Unit) {
+            detectTapGestures(onLongPress = {
+                onLongPress()
+            })
+        }) {
             if (substitutionData.className.isNotEmpty())
                 Card(
                     shape = RoundedCornerShape(14.dp),
@@ -75,9 +81,8 @@ fun SubstitutionElement(substitutionData: SubstitutionData) {
                                 )
                         }
                     }
-
                     Spacer(modifier = Modifier.height(10.dp))
-                }//(([A-ZĘ€ÓŁŚĄŻŹĆŃ][a-zę€ółśążźćń]*\s[A-ZĘ€ÓŁŚĄŻŹĆŃ][a-zę€ółśążźćń]*-[A-ZĘ€ÓŁŚĄŻŹĆŃ][a-zę€ółśążźćń]*)|([A-ZĘ€ÓŁŚĄŻŹĆŃ][a-zę€ółśążźćń]*\s[A-ZĘ€ÓŁŚĄŻŹĆŃ][a-zę€ółśążźćń]*))\s➔\s(([A-ZĘ€ÓŁŚĄŻŹĆŃ][a-zę€ółśążźćń]*\s[A-ZĘ€ÓŁŚĄŻŹĆŃ][a-zę€ółśążźćń]*-[A-ZĘ€ÓŁŚĄŻŹĆŃ][a-zę€ółśążźćń]*)|([A-ZĘ€ÓŁŚĄŻŹĆŃ][a-zę€ółśążźćń]*\s[A-ZĘ€ÓŁŚĄŻŹĆŃ][a-zę€ółśążźćń]*))
+                }
             }
         }
     }

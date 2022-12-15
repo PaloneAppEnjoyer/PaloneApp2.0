@@ -1,6 +1,7 @@
 package com.palone.paloneapp.utils
 
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -28,13 +29,17 @@ fun composableToBitmap(
      * Kept in remember so recomposition doesn't re-initialize it
      **/
     val composeView = remember { ComposeView(context) }
-
+    Log.i("ddd1", "${composeView.height}")
     /**
      * Callback function which could get latest image bitmap
      **/
-    fun captureBitmap(): Bitmap {
-        return composeView.drawToBitmap()
-    }
+//    val showDialog = remember {
+//        mutableStateOf(false)
+//    }
+//    if (showDialog.value)
+//        Dialog(onDismissRequest = {showDialog.value = false}) {
+//            content.invoke()
+//        }
 
     /** Use Native View inside Composable **/
     AndroidView(
@@ -43,11 +48,21 @@ fun composableToBitmap(
             composeView.apply {
                 setContent {
                     content.invoke()
+                    Log.i("ddd4", "${composeView.height}")
                 }
             }
 
         }
     )
+    Log.i("ddd2", "${composeView.height}")
+    fun captureBitmap(): Bitmap {
+//        showDialog.value = true;
+        composeView.setContent {
+            content.invoke()
+            Log.i("ddd5", "${composeView.height}")
+        }
+        return composeView.drawToBitmap()
+    }
 
     /** returning callback to bitmap **/
     return ::captureBitmap

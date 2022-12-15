@@ -81,7 +81,6 @@ fun AppSettingsScreen(navHostController: NavHostController) {
             Dialog(onDismissRequest = { shouldShowTodoListDialog.value = false }) {
                 Text(text = "Color picker do zmieniania motywu aplikacji")
                 Text(text = "Wyświetlanie obecnej lekcji jako powiadomienie")
-                Text(text = "")
             }
     }
 }

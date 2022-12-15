@@ -33,7 +33,6 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         val pref = getSharedPreferences("pref", Context.MODE_PRIVATE)
         val substitutionsViewModel by viewModels<SubstitutionsViewModel>()
         val timetableViewModel by viewModels<TimetableViewModel>()
@@ -88,7 +87,6 @@ class MainActivity : ComponentActivity() {
         })
 
     }
-
     // Declare the launcher at the top of your Activity/Fragment:
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

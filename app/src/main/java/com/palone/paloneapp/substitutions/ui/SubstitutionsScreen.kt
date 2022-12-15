@@ -1,4 +1,4 @@
-package com.palone.paloneapp.ui.screens
+package com.palone.paloneapp.substitutions.ui
 
 import android.util.Log
 import androidx.compose.animation.*
@@ -51,7 +51,6 @@ fun SubstitutionsScreen(viewModel: SubstitutionsViewModel, navHostController: Na
     }
     val bitmapFromComposable =
         composableToBitmap { SubstitutionElement(substitutionData = substitutionDataFilament.value) }
-
 
     Scaffold(
         scaffoldState = viewModel.uiState.collectAsState().value.scaffoldState,
@@ -137,17 +136,8 @@ fun SubstitutionsScreen(viewModel: SubstitutionsViewModel, navHostController: Na
                             transitionSpec = { scaleIn() with fadeOut() }) { scope ->
                             SubstitutionElement(substitutionData = scope) {
                                 substitutionDataFilament.value = scope
-                                viewModel.saveBitmapToInternalStorage(
-                                    localContext,
-                                    bitmapFromComposable.invoke(),
-                                    "share.png"
-                                )
-                                viewModel.shareImage(
-                                    context = localContext,
-                                )
+                                viewModel.onLongPressShare(bitmapFromComposable, localContext)
                             }
-
-
                         }
                     }
                 }

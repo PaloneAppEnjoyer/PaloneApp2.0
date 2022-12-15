@@ -1,4 +1,4 @@
-package com.palone.paloneapp.ui.screens
+package com.palone.paloneapp.substitutions.ui
 
 import android.util.Log
 import androidx.compose.animation.*
@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
@@ -38,11 +39,19 @@ import com.palone.paloneapp.ui.SubstitutionsViewModel
 import com.palone.paloneapp.ui.components.DrawerItem
 import com.palone.paloneapp.ui.components.MainFloatingActionButton
 import com.palone.paloneapp.ui.components.TopBar
+import com.palone.paloneapp.utils.composableToBitmap
 
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun SubstitutionsScreen(viewModel: SubstitutionsViewModel, navHostController: NavHostController) {
+    val localContext = LocalContext.current
+    val substitutionDataFilament = remember {
+        mutableStateOf(SubstitutionData("", emptyList()))
+    }
+    val bitmapFromComposable =
+        composableToBitmap { SubstitutionElement(substitutionData = substitutionDataFilament.value) }
+
     Scaffold(
         scaffoldState = viewModel.uiState.collectAsState().value.scaffoldState,
         modifier = Modifier.fillMaxSize(),
@@ -125,7 +134,10 @@ fun SubstitutionsScreen(viewModel: SubstitutionsViewModel, navHostController: Na
                         AnimatedContent(
                             targetState = it,
                             transitionSpec = { scaleIn() with fadeOut() }) { scope ->
-                            SubstitutionElement(substitutionData = scope)
+                            SubstitutionElement(substitutionData = scope) {
+                                substitutionDataFilament.value = scope
+                                viewModel.onLongPressShare(bitmapFromComposable, localContext)
+                            }
                         }
                     }
                 }
@@ -136,3 +148,5 @@ fun SubstitutionsScreen(viewModel: SubstitutionsViewModel, navHostController: Na
         QueryFilterDialog(viewModel = viewModel)
 
 }
+
+

@@ -9,9 +9,9 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.palone.paloneapp.substitutions.data.ScreensProperties
+import com.palone.paloneapp.substitutions.ui.SubstitutionsScreen
 import com.palone.paloneapp.timetable.ui.TimetableScreen
 import com.palone.paloneapp.ui.screens.AppSettingsScreen
-import com.palone.paloneapp.ui.screens.SubstitutionsScreen
 
 @RequiresApi(Build.VERSION_CODES.N)
 @OptIn(ExperimentalAnimationApi::class)

@@ -1,17 +1,24 @@
 package com.palone.paloneapp.ui
 
+import android.content.Context
+import android.content.Intent
+import android.graphics.Bitmap
+import androidx.core.content.FileProvider
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.palone.paloneapp.substitutions.data.ScreensProperties
 import com.palone.paloneapp.substitutions.data.models.SubstitutionsScreenUiState
 import com.palone.paloneapp.substitutions.domain.substitutionsDataManager.SubstitutionsDataManagerImpl
 import com.palone.paloneapp.utils.htmlParser.HtmlParserImpl
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
+import java.io.File
+import java.io.FileOutputStream
 import java.util.*
 
 class SubstitutionsViewModel : MainViewModel() {
@@ -23,6 +30,58 @@ class SubstitutionsViewModel : MainViewModel() {
 
     fun updateSelectedLocalDate(date: LocalDate) {
         _uiState.update { it.copy(selectedLocalDate = date) }
+    }
+
+    private fun saveBitmapToInternalStorage(
+        context: Context,
+        bitmap: Bitmap,
+        fileName: String
+    ): Boolean {
+        return try {
+            val file = File(context.filesDir, fileName)
+            val stream = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.PNG, 90, stream)
+            stream.flush()
+            stream.close()
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    fun onLongPressShare(bitmapFromComposable: () -> Bitmap, context: Context) {
+        _uiState.update { it.copy(isLoading = true) }
+        viewModelScope.launch {
+            delay(1000)
+            saveBitmapToInternalStorage(
+                context = context,
+                bitmapFromComposable.invoke(),
+                "share.png"
+            )
+            _uiState.update { it.copy(isLoading = false) }
+            shareImage(
+                context = context,
+            )
+        }
+    }
+
+    private fun shareImage(context: Context) {
+        val intent = Intent(Intent.ACTION_SEND)
+        val photoFile = File(context.filesDir, "share.png")
+        intent.putExtra(
+            Intent.EXTRA_STREAM, FileProvider.getUriForFile(
+                context,
+                context.applicationContext.packageName + ".provider",
+                photoFile
+            )
+        )
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+        intent.type = "image/*"
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        intent.addFlags(Intent.FLAG_GRANT_PREFIX_URI_PERMISSION)
+        context.startActivity(Intent.createChooser(intent, "Share Via"))
+
     }
 
     override fun onFabClick(navHostController: NavHostController) {

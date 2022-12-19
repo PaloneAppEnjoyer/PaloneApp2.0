@@ -20,8 +20,7 @@ fun SubstitutionElement(substitutionData: SubstitutionData, onLongPress: () -> U
     Card(
         shape = RoundedCornerShape(10.dp),
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp),
+            .fillMaxWidth(),
         backgroundColor = MaterialTheme.colors.primaryVariant,
         contentColor = MaterialTheme.colors.secondary
     ) {

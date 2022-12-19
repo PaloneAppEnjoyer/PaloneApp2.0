@@ -3,26 +3,26 @@ package com.palone.paloneapp.substitutions.ui
 import android.util.Log
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
@@ -75,20 +75,39 @@ fun SubstitutionsScreen(viewModel: SubstitutionsViewModel, navHostController: Na
         Column(
             modifier = Modifier
                 .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Kalendar(modifier = Modifier,
-                kalendarType = KalendarType.Oceanic,
-                kalendarThemeColor = KalendarThemeColor(
-                    MaterialTheme.colors.primaryVariant,
-                    MaterialTheme.colors.secondary,
-                    MaterialTheme.colors.secondary
-                ),
-                onCurrentDayClick = { kalendarDay, _ ->
-                    viewModel.updateSelectedLocalDate(kalendarDay.localDate)
-                    viewModel.refreshSubstitutionsDataWithLocalDate(kalendarDay.localDate) { viewModel.refreshFilteredSubstitutionsWithQuery() }
+            Card(
+                backgroundColor = MaterialTheme.colors.primaryVariant,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 10.dp),
+                shape = RoundedCornerShape(0.dp)
+            ) {
+                Kalendar(
+                    modifier = Modifier
+                        .requiredHeight(130.dp)
+                        .requiredWidth(410.dp)
+                        .scale(
+                            scale = if (LocalConfiguration.current.screenWidthDp < 410) {
+                                (LocalConfiguration.current.screenWidthDp.toFloat()) / 410f
+                            } else 1f
+                        )
+                        .aspectRatio(3.01f),
+                    kalendarType = KalendarType.Oceanic,
+                    kalendarThemeColor = KalendarThemeColor(
+                        MaterialTheme.colors.primaryVariant,
+                        MaterialTheme.colors.secondary,
+                        MaterialTheme.colors.secondary
+                    ),
+                    onCurrentDayClick = { kalendarDay, _ ->
+                        viewModel.updateSelectedLocalDate(kalendarDay.localDate)
+                        viewModel.refreshSubstitutionsDataWithLocalDate(kalendarDay.localDate) { viewModel.refreshFilteredSubstitutionsWithQuery() }
+                    },
+                    takeMeToDate = viewModel.uiState.collectAsState().value.selectedLocalDate,
+                )
+            }
 
-                }
-            )
             val willRefresh = remember { mutableStateOf(false) }
             val reloadBackgroundColor = animateColorAsState(
                 targetValue = if (willRefresh.value) Color(0x77850000) else Color(0x2D000000),
@@ -119,7 +138,10 @@ fun SubstitutionsScreen(viewModel: SubstitutionsViewModel, navHostController: Na
                     )
 
                 }) {
-                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                Column(
+                    modifier = Modifier.verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
                     if (viewModel.uiState.collectAsState().value.filteredSubstitutionsList.isNullOrEmpty())
                         SubstitutionElement(
                             substitutionData = SubstitutionData(
@@ -140,6 +162,7 @@ fun SubstitutionsScreen(viewModel: SubstitutionsViewModel, navHostController: Na
                             }
                         }
                     }
+                    Spacer(modifier = Modifier.height(0.dp))
                 }
             }
         }

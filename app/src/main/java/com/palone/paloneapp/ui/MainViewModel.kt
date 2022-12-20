@@ -1,10 +1,8 @@
 package com.palone.paloneapp.ui
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
-import com.palone.paloneapp.data.UserPreferencesRepository
-import kotlinx.coroutines.launch
+import com.palone.paloneapp.utils.PreferencesProvider.PreferencesProviderImpl
 
 
 sealed class MainViewModel : ViewModel() {
@@ -13,15 +11,11 @@ sealed class MainViewModel : ViewModel() {
     abstract suspend fun updateUiStateWithPreferences()
     abstract fun onFabClick(navHostController: NavHostController)
     val directory = "/data/user/0/com.palone.paloneapp/files" //TODO("can't do this like that")
-    lateinit var preferencesRepository: UserPreferencesRepository
-    fun setUserPreferencesRepository(
-        userPreferencesRepository: UserPreferencesRepository,
-        then: () -> Unit = {}
+    lateinit var preferencesProvider: PreferencesProviderImpl
+    fun updatePreferencesProvider(
+        preferencesProviderImpl: PreferencesProviderImpl
     ) {
-        preferencesRepository = userPreferencesRepository
-        viewModelScope.launch {
-            updateUiStateWithPreferences()
-            then()
-        }
+        this.preferencesProvider = preferencesProviderImpl
+        preferencesProvider.runInScope { updateUiStateWithPreferences() }
     }
 }

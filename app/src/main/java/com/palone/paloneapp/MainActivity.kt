@@ -21,19 +21,20 @@ import androidx.compose.material.darkColors
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
-import androidx.datastore.preferences.preferencesDataStore
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.ktx.messaging
-import com.palone.paloneapp.data.UserPreferencesRepository
 import com.palone.paloneapp.ui.PaloneApp
 import com.palone.paloneapp.ui.SubstitutionsViewModel
 import com.palone.paloneapp.ui.TimetableViewModel
 import com.palone.paloneapp.ui.theme.PaloneAppTheme
+import com.palone.paloneapp.utils.PreferencesProvider.PreferencesProviderImpl
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlin.coroutines.EmptyCoroutineContext
 
 class MainActivity : ComponentActivity() {
-    val Context.dataStore by preferencesDataStore(name = "user_preferences")
     private val CHANNELID = "com.palone.paloneapp.channelID"
     private val CHANNELNAME = "Main notification channel"
 
@@ -42,14 +43,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val substitutionsViewModel by viewModels<SubstitutionsViewModel>()
         val timetableViewModel by viewModels<TimetableViewModel>()
-        val userPreferencesRepository = UserPreferencesRepository(this.dataStore)
+        val scope = CoroutineScope(EmptyCoroutineContext)
+        val preferencesProvider = PreferencesProviderImpl(this, scope)
+        scope.launch { Log.i("chujccccc", "dd") }
+        timetableViewModel.updatePreferencesProvider(preferencesProvider)
+        substitutionsViewModel.updatePreferencesProvider(preferencesProvider)
         createNotificationChannel()
-        substitutionsViewModel.setUserPreferencesRepository(userPreferencesRepository)
-        timetableViewModel.setUserPreferencesRepository(userPreferencesRepository) // Yelling at me that there are two instances, but there isn't
-//        substitutionsViewModel.setUserPreferencesRepository(userPreferencesRepository){
-//            timetableViewModel.setUserPreferencesRepository(userPreferencesRepository)
-//        } // Didn't do any difference
-
 
         Firebase.messaging.subscribeToTopic("mainTopic")
             .addOnCompleteListener { task ->

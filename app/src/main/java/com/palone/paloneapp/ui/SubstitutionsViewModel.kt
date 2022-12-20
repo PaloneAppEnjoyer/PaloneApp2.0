@@ -27,11 +27,11 @@ class SubstitutionsViewModel : MainViewModel() {
     private val timeManager = TimeManagerImpl(_currentCalendar)
 
     private fun saveFilterQueryPreferences(query: String) {
-        viewModelScope.launch { preferencesRepository.updateFilterQuery(query) }
+        preferencesProvider.updateFilterQuery(query)
     }
 
     override suspend fun updateUiStateWithPreferences() {
-        _uiState.update { it.copy(classFilter = preferencesRepository.filterQueryFlow.first()) }
+        _uiState.update { it.copy(classFilter = preferencesProvider.filterQueryFlow.first()) }
     }
 
 

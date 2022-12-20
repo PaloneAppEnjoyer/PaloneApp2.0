@@ -42,7 +42,11 @@ class TimetableViewModel : MainViewModel() {
     private var allSchoolClassNames: MutableList<String> = mutableListOf()
 
     private fun saveSchoolClassPreferences(schoolClassName: String) {
-        viewModelScope.launch { preferencesRepository.updateSchoolClass(schoolClassName) }
+        preferencesProvider.updateSchoolClass(schoolClassName)
+    }
+
+    override suspend fun updateUiStateWithPreferences() {
+        _uiState.update { it.copy(selectedSchoolClass = preferencesProvider.schoolClassFlow.first()) }
     }
 
     override fun onFabClick(navHostController: NavHostController) {
@@ -57,9 +61,6 @@ class TimetableViewModel : MainViewModel() {
         _uiState.value.scaffoldState.drawerState.close()
     }
 
-    override suspend fun updateUiStateWithPreferences() {
-        _uiState.update { it.copy(selectedSchoolClass = preferencesRepository.schoolClassFlow.first()) }
-    }
 
     fun setThisGroupHidden(group: String) {
         _uiState.update { it.copy(isLoading = true) }

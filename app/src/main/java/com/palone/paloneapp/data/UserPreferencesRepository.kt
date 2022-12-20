@@ -31,7 +31,6 @@ class UserPreferencesRepository(private val dataStore: DataStore<Preferences>) {
         dataStore.edit { preferences ->
             preferences[Preference.SCHOOL_CLASS] = schoolClass
             Log.i("info", "saving school class")
-
         }
     }
 
@@ -50,6 +49,8 @@ class UserPreferencesRepository(private val dataStore: DataStore<Preferences>) {
                 throw exception
             }
         }.map { preferences ->
+            Log.i("info", "sending filter query")
+
             preferences.get(Preference.FILTER_QUERY) ?: ""
         }
 
@@ -62,6 +63,7 @@ class UserPreferencesRepository(private val dataStore: DataStore<Preferences>) {
                 throw exception
             }
         }.map { preferences ->
+            Log.i("info", "sending school class")
             preferences.get(Preference.SCHOOL_CLASS) ?: ""
         }
 

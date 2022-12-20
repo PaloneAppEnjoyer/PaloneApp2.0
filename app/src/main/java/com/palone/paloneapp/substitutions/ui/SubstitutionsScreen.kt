@@ -40,6 +40,7 @@ import com.palone.paloneapp.ui.components.DrawerItem
 import com.palone.paloneapp.ui.components.MainFloatingActionButton
 import com.palone.paloneapp.ui.components.TopBar
 import com.palone.paloneapp.utils.composableToBitmap
+import com.palone.paloneapp.utils.shareAImage
 
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -158,7 +159,10 @@ fun SubstitutionsScreen(viewModel: SubstitutionsViewModel, navHostController: Na
                             transitionSpec = { scaleIn() with fadeOut() }) { scope ->
                             SubstitutionElement(substitutionData = scope) {
                                 substitutionDataFilament.value = scope
-                                viewModel.onLongPressShare(bitmapFromComposable, localContext)
+                                viewModel.onLongPressShare(
+                                    bitmapFromComposable,
+                                    localContext,
+                                    shareImage = { shareAImage(localContext) })
                             }
                         }
                     }

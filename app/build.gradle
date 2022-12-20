@@ -52,6 +52,8 @@ android {
 
 dependencies {
     def work_version = "2.7.1"
+
+    //gson
     implementation 'com.google.code.gson:gson:2.10'
     //swipe refresh
     implementation 'com.google.accompanist:accompanist-swiperefresh:0.27.0'

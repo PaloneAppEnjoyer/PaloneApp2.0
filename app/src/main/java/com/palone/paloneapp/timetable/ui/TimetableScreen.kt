@@ -34,11 +34,14 @@ import java.util.*
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun TimetableScreen(viewModel: TimetableViewModel, navHostController: NavHostController) {
-    val shouldShowSchoolClassFilterDialog = remember { mutableStateOf(false) }
+    val shouldShowSchoolClassFilterDialog =
+        remember { mutableStateOf(viewModel.uiState.value.selectedSchoolClass == "") }
     val calendarTodayDayOfWeek = remember {
         mutableStateOf(Calendar.getInstance().get(Calendar.DAY_OF_WEEK))
     }
-    if (shouldShowSchoolClassFilterDialog.value) ClassFilterDialog(viewModel = viewModel) {
+    if (shouldShowSchoolClassFilterDialog.value && viewModel.getAllSchoolClassesNames()
+            .isNotEmpty()
+    ) ClassFilterDialog(viewModel = viewModel) {
         shouldShowSchoolClassFilterDialog.value = false
     }
     val shouldShowHideGroupDialog = remember { mutableStateOf(false) }

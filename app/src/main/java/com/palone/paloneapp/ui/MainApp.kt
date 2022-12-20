@@ -20,9 +20,6 @@ fun PaloneApp(
     substitutionsViewModel: SubstitutionsViewModel,
     timetableViewModel: TimetableViewModel
 ) {
-    // TODO add navigation
-    // TODO switch between screens
-//    SubstitutionsScreen(viewModel = substitutionsViewModel)
     val navHostController = rememberAnimatedNavController()
     AnimatedNavHost(
         navController = navHostController,

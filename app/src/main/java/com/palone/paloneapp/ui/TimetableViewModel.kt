@@ -15,10 +15,7 @@ import com.palone.paloneapp.utils.htmlParser.HtmlParserImpl
 import com.palone.paloneapp.utils.timeManager.TimeManagerImpl
 import com.palone.paloneapp.utils.timetableDataResponseToListOfTimetableDataParser.TimetableDataResponseToListOfTimetableDataParserImpl
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import java.util.*
@@ -43,6 +40,11 @@ class TimetableViewModel : MainViewModel() {
 
     private var timetableList: List<TimetableData> = emptyList()
     private var allSchoolClassNames: MutableList<String> = mutableListOf()
+
+    private fun saveSchoolClassPreferences(schoolClassName: String) {
+        viewModelScope.launch { preferencesRepository.updateSchoolClass(schoolClassName) }
+    }
+
     override fun onFabClick(navHostController: NavHostController) {
         navHostController.navigate(ScreensProperties.SubstitutionsScreen.route)
     }
@@ -53,6 +55,10 @@ class TimetableViewModel : MainViewModel() {
 
     override suspend fun closeDrawer() {
         _uiState.value.scaffoldState.drawerState.close()
+    }
+
+    override suspend fun updateUiStateWithPreferences() {
+        _uiState.update { it.copy(selectedSchoolClass = preferencesRepository.schoolClassFlow.first()) }
     }
 
     fun setThisGroupHidden(group: String) {
@@ -92,6 +98,7 @@ class TimetableViewModel : MainViewModel() {
     fun setSchoolClassQuery(schoolClassName: String) {
         _uiState.update { it.copy(selectedSchoolClass = schoolClassName, isLoading = true) }
         _uiState.update { it.copy(lessonsList = getTimetableLessons(), isLoading = false) }
+        saveSchoolClassPreferences(schoolClassName)
     }
 
     private fun getTimetableLessons(): List<TimetableLessons> {

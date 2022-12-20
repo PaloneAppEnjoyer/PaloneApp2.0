@@ -31,7 +31,7 @@ fun QueryFilterDialog(viewModel: SubstitutionsViewModel) {
             ) {
                 TextField(
                     value = viewModel.uiState.collectAsState().value.classFilter,
-                    onValueChange = { viewModel.updateTextFilter(it);viewModel.refreshFilteredSubstitutionsWithQuery() },
+                    onValueChange = { viewModel.updateClassFilter(it);viewModel.refreshFilteredSubstitutionsWithQuery() },
                     colors = TextFieldDefaults.textFieldColors(backgroundColor = MaterialTheme.colors.secondary),
                     modifier = Modifier.padding(10.dp)
                 )

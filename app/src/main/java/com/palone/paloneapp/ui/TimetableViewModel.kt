@@ -34,7 +34,9 @@ class TimetableViewModel : MainViewModel() {
     private lateinit var substitutionsToday: List<SubstitutionData>
     private lateinit var substitutionsTomorrow: List<SubstitutionData>
 
-    private val timeManager = TimeManagerImpl(Calendar.getInstance())
+    private val _currentCalendar = Calendar.getInstance()
+
+    private val timeManager = TimeManagerImpl(_currentCalendar)
     private val currentDate = timeManager.getCurrentDate()
     private val tomorrowDate = timeManager.getTomorrowDate()
 
@@ -45,8 +47,17 @@ class TimetableViewModel : MainViewModel() {
         preferencesProvider.updateSchoolClass(schoolClassName)
     }
 
+    private fun saveHiddenGroupsFilter(groups: List<String>) {
+        preferencesProvider.updateHiddenGroupsFilter(groups.toSet())
+    }
+
     override suspend fun updateUiStateWithPreferences() {
-        _uiState.update { it.copy(selectedSchoolClass = preferencesProvider.schoolClassFlow.first()) }
+        _uiState.update {
+            it.copy(
+                selectedSchoolClass = preferencesProvider.schoolClassFlow.first(),
+                hiddenGroups = preferencesProvider.hiddenGroupsFilterFlow.first().toList()
+            )
+        }
     }
 
     override fun onFabClick(navHostController: NavHostController) {
@@ -73,6 +84,7 @@ class TimetableViewModel : MainViewModel() {
                 isLoading = false
             )
         }
+        saveHiddenGroupsFilter(currentHiddenGroups)
     }
 
     fun unsetThisGroupHidden(group: String) {
@@ -86,6 +98,7 @@ class TimetableViewModel : MainViewModel() {
                 isLoading = false
             )
         }
+        saveHiddenGroupsFilter(currentHiddenGroups)
     }
 
     fun getAllSchoolClassesNames(): List<String> {
@@ -116,6 +129,7 @@ class TimetableViewModel : MainViewModel() {
     private fun refreshTimetableWithNewData(data: List<TimetableData>) {
         _uiState.update { it.copy(isLoading = true) }
         timetableList = data
+        allSchoolClassNames.clear()
         timetableList.forEach { allSchoolClassNames.add(it.className) }
         _uiState.update { it.copy(lessonsList = getTimetableLessons(), isLoading = false) }
     }
@@ -203,6 +217,7 @@ class TimetableViewModel : MainViewModel() {
     init {
         viewModelScope.launch {
             _uiState.update { it.copy(todayDate = currentDate) }
+            selectDay(if (_currentCalendar.get(Calendar.HOUR_OF_DAY) > 16) timeManager.getTomorrowDate().day_of_week_name else timeManager.getCurrentDate().day_of_week_name)
             substitutionsToday = substitutionsDataManager.getSubstitutionsDataWithLocalDate(
                 htmlParser,
                 LocalDate(currentDate.year, currentDate.month, currentDate.day_of_month)
@@ -211,9 +226,12 @@ class TimetableViewModel : MainViewModel() {
                 htmlParser,
                 LocalDate(tomorrowDate.year, tomorrowDate.month, tomorrowDate.day_of_month)
             )
-            refreshTimetableWithNewData(
-                timetableDataManager.getTimetableData(directory, timetableDataParser)
-            )
+            timetableDataManager.getTimetableData(directory, timetableDataParser)
+                .collect { value ->
+                    refreshTimetableWithNewData(
+                        value
+                    )
+                }
             syncCurrentLessonNumberWithCurrentTime()
         }
     }

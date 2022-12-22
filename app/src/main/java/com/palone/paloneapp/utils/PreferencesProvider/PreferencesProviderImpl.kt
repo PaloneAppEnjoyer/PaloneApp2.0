@@ -25,6 +25,11 @@ class PreferencesProviderImpl(context: Context, private val scope: CoroutineScop
         currentJob = scope.launch { preferencesRepository.updateSchoolClass(schoolClass) }
     }
 
+    fun updateHiddenGroupsFilter(groups: Set<String>) {
+        currentJob = scope.launch { preferencesRepository.updateHiddenGroupsFilter(groups) }
+    }
+
+    val hiddenGroupsFilterFlow = preferencesRepository.hiddenGroupsFilterFlow
     val filterQueryFlow = preferencesRepository.filterQueryFlow
     val schoolClassFlow = preferencesRepository.schoolClassFlow
     fun runInScope(run: suspend () -> Unit) {

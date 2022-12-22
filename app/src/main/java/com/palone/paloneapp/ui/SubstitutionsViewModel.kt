@@ -2,7 +2,6 @@ package com.palone.paloneapp.ui
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.palone.paloneapp.substitutions.data.ScreensProperties
@@ -36,7 +35,6 @@ class SubstitutionsViewModel : MainViewModel() {
 
 
     fun updateSelectedLocalDate(date: LocalDate) {
-        Log.i("timeee", date.toString())
         _uiState.update { it.copy(selectedLocalDate = date) }
     }
 

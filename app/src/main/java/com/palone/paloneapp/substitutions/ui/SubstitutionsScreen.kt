@@ -51,7 +51,13 @@ fun SubstitutionsScreen(viewModel: SubstitutionsViewModel, navHostController: Na
         mutableStateOf(SubstitutionData("", emptyList()))
     }
     val bitmapFromComposable =
-        composableToBitmap { SubstitutionElement(substitutionData = substitutionDataFilament.value) }
+        composableToBitmap {
+            SubstitutionElement(
+                substitutionData = substitutionDataFilament.value,
+                viewModel.uiState.collectAsState().value.selectedLocalDate,
+                true
+            )
+        }
 
     Scaffold(
         scaffoldState = viewModel.uiState.collectAsState().value.scaffoldState,
@@ -151,13 +157,18 @@ fun SubstitutionsScreen(viewModel: SubstitutionsViewModel, navHostController: Na
                                         teacherReplacement = "Brak informacji. Jeśli masz pewność, że nowe dostępstwa już są dostępne - sprawdź ustawienia filtra"
                                     )
                                 )
-                            )
+                            ), viewModel.uiState.collectAsState().value.selectedLocalDate,
+                            false
                         )
                     viewModel.uiState.collectAsState().value.filteredSubstitutionsList?.forEach {
                         AnimatedContent(
                             targetState = it,
                             transitionSpec = { scaleIn() with fadeOut() }) { scope ->
-                            SubstitutionElement(substitutionData = scope) {
+                            SubstitutionElement(
+                                substitutionData = scope,
+                                viewModel.uiState.collectAsState().value.selectedLocalDate,
+                                false
+                            ) {
                                 substitutionDataFilament.value = scope
                                 viewModel.onLongPressShare(
                                     bitmapFromComposable,

@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.palone.paloneapp.substitutions.data.ScreensProperties
 import com.palone.paloneapp.timetable.ui.components.*
 import com.palone.paloneapp.ui.TimetableViewModel
 import com.palone.paloneapp.ui.components.DrawerItem
@@ -74,6 +75,9 @@ fun TimetableScreen(viewModel: TimetableViewModel, navHostController: NavHostCon
             DrawerItem(title = "Wyszukaj po sali lekcyjnej") {
                 shouldShowClassRoomNameTimetableDialog.value = true
             }
+            DrawerItem(
+                title = "Opcje",
+                onClick = { navHostController.navigate(ScreensProperties.SettingsScreen.route) })
         },
         topBar = {
             TopBar(viewModel = viewModel) {
@@ -104,18 +108,28 @@ fun TimetableScreen(viewModel: TimetableViewModel, navHostController: NavHostCon
                         targetState = it2,
                         transitionSpec = { scaleIn() with fadeOut() }) { scope ->
                         Row {
+                            val data = scope.entries.filter {
+                                !viewModel.uiState.value.hiddenGroups.contains(
+                                    it.groupName
+                                )
+                            }
+                            val substitutions =
+                                viewModel.getSubstitutionsForSelectedLesson(scope.lessonNumber)
+                                    .filter {
+                                        data.any { it2 ->
+                                            it.subject.contains(
+                                                it2.groupName.replace(".", "")
+                                            ) || it2.groupName == "Cała klasa"
+                                        }
+                                    }//TODO ("Ability to disable this filter because it may break some substitutions in the future")
                             TimetableElement(
-                                data = scope.entries.filter {
-                                    !viewModel.uiState.value.hiddenGroups.contains(
-                                        it.groupName
-                                    )
-                                },
+                                data = data,
                                 modifier = Modifier
                                     .padding(top = 5.dp),
                                 lessonNumber = scope.lessonNumber,
                                 currentLesson = viewModel.uiState.collectAsState().value.currentLesson,
                                 todayDayInWeek = calendarTodayDayOfWeek.value,
-                                substitutions = viewModel.getSubstitutionsForSelectedLesson(scope.lessonNumber),
+                                substitutions = substitutions,
                                 areSubstitutionsForTomorrow = viewModel.uiState.collectAsState().value.selectedDay != viewModel.uiState.collectAsState().value.todayDate.day_of_week_name
                             )
                         }

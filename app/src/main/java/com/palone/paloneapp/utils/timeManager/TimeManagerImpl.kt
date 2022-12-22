@@ -21,8 +21,12 @@ class TimeManagerImpl(private val calendar: Calendar) : TimeManager {
     }
 
     override fun getTomorrowDate(): DateSystem {
-        val tempCal = calendar
-        tempCal.set(Calendar.DAY_OF_YEAR, calendar.get(Calendar.DAY_OF_YEAR) + 1)
+        val tempCal = Calendar.getInstance()
+        tempCal.set(Calendar.YEAR, calendar.get(Calendar.YEAR))
+        tempCal.set(Calendar.MONTH, calendar.get(Calendar.MONTH))
+        tempCal.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH))
+        tempCal.set(Calendar.DAY_OF_YEAR, calendar.get(Calendar.DAY_OF_YEAR))
+        tempCal.set(Calendar.DAY_OF_YEAR, tempCal.get(Calendar.DAY_OF_YEAR) + 1)
         return DateSystem(
             tempCal.get(Calendar.YEAR),
             tempCal.get(Calendar.MONTH) + 1,

@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
+import com.palone.paloneapp.settings.ui.components.ThemeEditorDialog
 import com.palone.paloneapp.ui.components.DrawerItem
 
 @Composable
@@ -48,6 +49,9 @@ fun AppSettingsScreen(navHostController: NavHostController) {
         val shouldShowTodoListDialog = remember {
             mutableStateOf(false)
         }
+        val shouldShowThemeEditorDialog = remember {
+            mutableStateOf(false)
+        }
         Column(modifier = Modifier.padding(paddingValues = it)) {
             DrawerItem(title = "Donate", onClick = {
                 val intent = Intent(
@@ -74,6 +78,9 @@ fun AppSettingsScreen(navHostController: NavHostController) {
                 )
             })
             DrawerItem(
+                title = "Edytuj kolory",
+                onClick = { shouldShowThemeEditorDialog.value = true })
+            DrawerItem(
                 title = "Więcej opcji wkrótce...",
                 onClick = { shouldShowTodoListDialog.value = true })
         }
@@ -85,6 +92,8 @@ fun AppSettingsScreen(navHostController: NavHostController) {
                 }
 
             }
+        if (shouldShowThemeEditorDialog.value)
+            ThemeEditorDialog { shouldShowThemeEditorDialog.value = false }
     }
 }
 

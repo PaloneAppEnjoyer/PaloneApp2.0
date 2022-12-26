@@ -78,7 +78,7 @@ fun DaySelectorDisplayData(
         val borderColor = BorderStroke(
             0.5.dp,
             animateColorAsState(
-                targetValue = if (it == selectedDay) MaterialTheme.colors.secondary else MaterialTheme.colors.primaryVariant,
+                targetValue = if (it == selectedDay) MaterialTheme.colors.surface else MaterialTheme.colors.primaryVariant,
                 animationSpec = tween(200)
             ).value
         )
@@ -88,7 +88,6 @@ fun DaySelectorDisplayData(
         Card(
             shape = cornerShape,
             modifier = Modifier
-                .clickable { onDaySelected(it) }
                 .height(70.dp)
                 .width(50.dp)
                 .onGloballyPositioned { coords -> if (it == days.first()) getCoordinates(coords.positionInWindow().y.dp) },
@@ -98,6 +97,9 @@ fun DaySelectorDisplayData(
             border = borderColor
         ) {
             Column(
+                modifier = Modifier
+                    .clickable { onDaySelected(it) }
+                    .fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {

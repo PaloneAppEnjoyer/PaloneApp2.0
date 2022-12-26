@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import com.palone.paloneapp.substitutions.data.ScreensProperties
+import com.palone.paloneapp.data.ScreensProperties
 import com.palone.paloneapp.timetable.ui.components.*
 import com.palone.paloneapp.ui.TimetableViewModel
 import com.palone.paloneapp.ui.components.DrawerItem

@@ -8,8 +8,9 @@ import androidx.compose.runtime.Composable
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import com.palone.paloneapp.substitutions.data.ScreensProperties
+import com.palone.paloneapp.data.ScreensProperties
 import com.palone.paloneapp.substitutions.ui.SubstitutionsScreen
+import com.palone.paloneapp.themeEditor.ThemeEditorScreen
 import com.palone.paloneapp.timetable.ui.TimetableScreen
 import com.palone.paloneapp.ui.screens.AppSettingsScreen
 
@@ -50,6 +51,9 @@ fun PaloneApp(
         }
         composable(ScreensProperties.SettingsScreen.route) {
             AppSettingsScreen(navHostController = navHostController)
+        }
+        composable(ScreensProperties.ThemeEditorScreen.route) {
+            ThemeEditorScreen(navHostController = navHostController)
         }
     }
 }

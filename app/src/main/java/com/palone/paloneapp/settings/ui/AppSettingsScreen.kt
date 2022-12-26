@@ -28,7 +28,7 @@ fun AppSettingsScreen(navHostController: NavHostController) {
         drawerBackgroundColor = MaterialTheme.colors.background,
         drawerContentColor = MaterialTheme.colors.secondary, topBar = {
             Card(
-                backgroundColor = MaterialTheme.colors.secondary,
+                backgroundColor = MaterialTheme.colors.surface,
                 modifier = Modifier
                     .height(50.dp)
                     .fillMaxWidth(),

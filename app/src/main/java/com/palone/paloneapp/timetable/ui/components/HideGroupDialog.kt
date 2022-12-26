@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.palone.paloneapp.ui.TimetableViewModel
 
@@ -18,7 +19,11 @@ import com.palone.paloneapp.ui.TimetableViewModel
 fun HideGroupDialog(viewModel: TimetableViewModel, onDismissRequest: () -> Unit = {}) {
     val groups: MutableList<String> = mutableListOf()
     Dialog(onDismissRequest = onDismissRequest) {
-        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+        Column(
+            modifier = Modifier.verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = "Wskaż grupy które chcesz ukryć", fontSize = 18.sp)
             viewModel.getRawTimetableList().forEach {
                 if (it.className == viewModel.uiState.collectAsState().value.selectedSchoolClass)
                     it.day.forEach { it2 ->
@@ -34,16 +39,6 @@ fun HideGroupDialog(viewModel: TimetableViewModel, onDismissRequest: () -> Unit 
                         }
                     }
             }
-//            viewModel.uiState.collectAsState().value.lessonsList.forEach {
-//                it.entries.forEach { it2 ->
-//                    if (!viewModel.uiState.value.hiddenGroups.contains(it2.groupName) && !groups.contains(
-//                            it2.groupName
-//                        )
-//                    ) {
-//                        groups.add(it2.groupName)
-//                    }
-//                }
-//            }
             groups.distinct().forEach { groupName ->
                 Row(
                     verticalAlignment = Alignment.CenterVertically,

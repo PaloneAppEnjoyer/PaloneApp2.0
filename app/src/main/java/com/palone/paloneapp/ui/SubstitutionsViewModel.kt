@@ -4,7 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
-import com.palone.paloneapp.substitutions.data.ScreensProperties
+import com.palone.paloneapp.data.ScreensProperties
 import com.palone.paloneapp.substitutions.data.models.SubstitutionsScreenUiState
 import com.palone.paloneapp.substitutions.domain.substitutionsDataManager.SubstitutionsDataManagerImpl
 import com.palone.paloneapp.utils.htmlParser.HtmlParserImpl
@@ -38,7 +38,7 @@ class SubstitutionsViewModel : MainViewModel() {
         _uiState.update { it.copy(selectedLocalDate = date) }
     }
 
-    private fun saveBitmapToInternalStorage(
+    private fun saveBitmapToInternalStorage(//TODO wywalić gdzieś indziej
         context: Context,
         bitmap: Bitmap,
         fileName: String

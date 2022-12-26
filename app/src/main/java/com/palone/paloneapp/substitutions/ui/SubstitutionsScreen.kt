@@ -30,7 +30,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.himanshoe.kalendar.Kalendar
 import com.himanshoe.kalendar.color.KalendarThemeColor
 import com.himanshoe.kalendar.model.KalendarType
-import com.palone.paloneapp.substitutions.data.ScreensProperties
+import com.palone.paloneapp.data.ScreensProperties
 import com.palone.paloneapp.substitutions.data.models.SubstitutionData
 import com.palone.paloneapp.substitutions.data.models.SubstitutionDataEntry
 import com.palone.paloneapp.substitutions.ui.substitutions_screen.QueryFilterDialog
@@ -104,7 +104,7 @@ fun SubstitutionsScreen(viewModel: SubstitutionsViewModel, navHostController: Na
                     kalendarType = KalendarType.Oceanic,
                     kalendarThemeColor = KalendarThemeColor(
                         MaterialTheme.colors.primaryVariant,
-                        MaterialTheme.colors.secondary,
+                        MaterialTheme.colors.surface,
                         MaterialTheme.colors.secondary
                     ),
                     onCurrentDayClick = { kalendarDay, _ ->

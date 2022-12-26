@@ -2,7 +2,7 @@ package com.palone.paloneapp.ui
 
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
-import com.palone.paloneapp.substitutions.data.ScreensProperties
+import com.palone.paloneapp.data.ScreensProperties
 import com.palone.paloneapp.substitutions.data.models.SubstitutionData
 import com.palone.paloneapp.substitutions.data.models.SubstitutionDataEntry
 import com.palone.paloneapp.substitutions.domain.substitutionsDataManager.SubstitutionsDataManagerImpl
@@ -10,7 +10,8 @@ import com.palone.paloneapp.timetable.data.models.TimetableData
 import com.palone.paloneapp.timetable.data.models.TimetableLessons
 import com.palone.paloneapp.timetable.data.models.TimetableScreenUiState
 import com.palone.paloneapp.timetable.domain.timetableDataManager.TimetableDataManagerImpl
-import com.palone.paloneapp.utils.between
+import com.palone.paloneapp.timetable.useCases.LessonToSubstitutionsProvider
+import com.palone.paloneapp.timetable.useCases.LessonToSubstitutionsProviderImpl
 import com.palone.paloneapp.utils.htmlParser.HtmlParserImpl
 import com.palone.paloneapp.utils.timeManager.TimeManagerImpl
 import com.palone.paloneapp.utils.timetableDataResponseToListOfTimetableDataParser.TimetableDataResponseToListOfTimetableDataParserImpl
@@ -20,7 +21,8 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import java.util.*
 
-class TimetableViewModel : MainViewModel() {
+class TimetableViewModel(private val lessonToSubstitutionsProvider: LessonToSubstitutionsProvider = LessonToSubstitutionsProviderImpl()) :
+    MainViewModel() {
     private val timetableDataManager = TimetableDataManagerImpl()
     private val timetableDataParser = TimetableDataResponseToListOfTimetableDataParserImpl()
 
@@ -140,32 +142,15 @@ class TimetableViewModel : MainViewModel() {
     }
 
     fun getSubstitutionsForSelectedLesson(lessonNumber: Int): List<SubstitutionDataEntry> {
-        val substitutionList = mutableListOf<SubstitutionDataEntry>()
         val data =
             if (_uiState.value.selectedDay == currentDate.day_of_week_name && substitutionsToday[0].entries[0].teacherReplacement != "  W tym dniu nie ma żadnych zastępstw") substitutionsToday
             else if (_uiState.value.selectedDay == tomorrowDate.day_of_week_name && substitutionsTomorrow[0].entries[0].teacherReplacement != "  W tym dniu nie ma żadnych zastępstw") substitutionsTomorrow
             else emptyList()
-        data.forEach {
-            if (it.className == _uiState.value.selectedSchoolClass)
-                it.entries.forEach { it2 ->
-                    if (when (it2.lessons.replace(" ", "").replace("(", "")
-                            .replace(")", "").replace("\n", "").length) {
-                            3 -> lessonNumber.between(
-                                it2.lessons.replace(" ", "").replace("(", "")
-                                    .replace(")", "").replace("\n", "")[0].toString().toInt(),
-                                it2.lessons.replace(" ", "").replace("(", "")
-                                    .replace(")", "").replace("\n", "")[2].toString().toInt()
-                            )
-                            1 -> it2.lessons.replace(" ", "").replace("(", "")
-                                .replace(")", "").replace("\n", "")[0].toString()
-                                .toInt() == lessonNumber
-                            else -> it2.lessons.replace(" ", "").replace("(", "")
-                                .replace(")", "").replace("\n", "") == "Cały dzień"
-                        }
-                    ) substitutionList.add(it2)
-                }
-        }
-        return substitutionList
+        return lessonToSubstitutionsProvider.getSubstitutionsFromLessonNumber(
+            lessonNumber,
+            data,
+            _uiState.value.selectedSchoolClass
+        )
     }
 
     private suspend fun syncCurrentLessonNumberWithCurrentTime() {
@@ -186,8 +171,7 @@ class TimetableViewModel : MainViewModel() {
                     in 621..624 -> 3.5f
 
                     in 625..670 -> 4.0f
-
-                    in 671..684 -> 420.0f
+                    in 671..684 -> 4.5f // 15 min
 
                     in 685..730 -> 5.0f
                     in 731..734 -> 5.5f

@@ -5,8 +5,12 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Card
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -44,15 +48,30 @@ fun DisplayTeacherTimetableDialog(data: List<TimetableData>, onDismissRequest: (
                 onDaySelected = { selectedDay.value = it;dataToDisplay.clear() },
                 isHorizontal = true
             )
-            TextField(
-                value = query.value,
-                onValueChange = { query.value = it;dataToDisplay.clear() })
+            Card(
+                backgroundColor = MaterialTheme.colors.background,
+                contentColor = MaterialTheme.colors.onPrimary
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.padding(5.dp)
+                ) {
+//                    Text(text = "Uwaga! Wielkość liter ma znaczenie!")
+                    TextField(placeholder = { Text(text = "Inicjały z planu lekcji") },
+                        value = query.value,
+                        onValueChange = { query.value = it;dataToDisplay.clear() })
+                }
+
+            }
+
             if (query.value.length > 1)
                 data.forEach { it1 ->
                     it1.day.filter { it.dayNameShorted == selectedDay.value }.forEach { it2 ->
                         it2.lessons.forEach { it3 ->
                             it3.entries.forEach { it4 ->
-                                if (it4.teacherShortName.contains(query.value)) dataToDisplay.add(
+                                if (it4.teacherShortName.lowercase()
+                                        .contains(query.value.lowercase())
+                                ) dataToDisplay.add(
                                     Pair(
                                         it3.lessonNumber,
                                         listOf(it4).toMutableList()

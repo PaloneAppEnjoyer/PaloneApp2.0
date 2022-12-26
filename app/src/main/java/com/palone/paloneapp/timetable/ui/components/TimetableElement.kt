@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.palone.paloneapp.substitutions.data.models.SubstitutionDataEntry
@@ -73,20 +74,20 @@ fun TimetableElement(
                 3.dp, when {
                     isNow -> Brush.verticalGradient(
                         colors = listOf(
-                            MaterialTheme.colors.secondary,
-                            MaterialTheme.colors.secondary
+                            MaterialTheme.colors.surface,
+                            MaterialTheme.colors.surface
                         )
                     )
                     isRightBefore -> Brush.verticalGradient(
                         colors = listOf(
-                            MaterialTheme.colors.secondary,
+                            MaterialTheme.colors.surface,
                             MaterialTheme.colors.primaryVariant,
                         )
                     )
                     isRightAfter -> Brush.verticalGradient(
                         colors = listOf(
                             MaterialTheme.colors.primaryVariant,
-                            MaterialTheme.colors.secondary,
+                            MaterialTheme.colors.surface,
                         )
                     )
                     else -> Brush.verticalGradient(
@@ -105,15 +106,15 @@ fun TimetableElement(
                         backgroundColor = MaterialTheme.colors.primaryVariant,
                         shape = RoundedCornerShape(30),
                         modifier = Modifier
-                            .padding(5.dp)
+                            .padding(5.dp),
+                        contentColor = MaterialTheme.colors.onPrimary
                     ) {
                         Row(
                             horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
                                 .padding(5.dp),
-
-                            ) {
+                        ) {
                             Text(
                                 text = lessonNumber.toString(),
                                 fontSize = 30.sp, modifier = Modifier.padding(end = 3.dp)
@@ -208,7 +209,7 @@ fun TimetableElementContent(
             if (isNow)
                 Card(
                     shape = RoundedCornerShape(10.dp),
-                    backgroundColor = MaterialTheme.colors.secondary
+                    backgroundColor = MaterialTheme.colors.surface
                 ) {
                     Text(
                         text = data.subjectName,
@@ -244,10 +245,19 @@ fun TimetableElementContent(
                     color = MaterialTheme.colors.primary
                 )
                 Text(text = data.groupName, color = MaterialTheme.colors.primary)
-                Text(text = data.classroomsName, fontSize = 17.sp)
+                Text(
+                    text = data.classroomsName,
+                    fontSize = 17.sp,
+                    color = MaterialTheme.colors.primary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
 
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(3.dp)) {
             if (showSchoolClass) data.schoolClassNames.forEach { Text(text = it) }
         }
+
     }
 }

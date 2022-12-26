@@ -23,7 +23,7 @@ fun MainFloatingActionButton(viewModel: MainViewModel, navHostController: NavHos
         contentColor = MaterialTheme.colors.onBackground,
         modifier = Modifier.size(70.dp),
         shape = RoundedCornerShape(100.dp),
-        backgroundColor = MaterialTheme.colors.secondary
+        backgroundColor = MaterialTheme.colors.surface
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,

@@ -60,7 +60,7 @@ class UserPreferencesRepository(private val dataStore: DataStore<Preferences>) {
                 throw exception
             }
         }.map { preferences ->
-            preferences.get(Preference.HIDDEN_GROUPS_FILTER) ?: setOf("")
+            preferences.get(Preference.HIDDEN_GROUPS_FILTER) ?: emptySet()
         }
 
     val schoolClassFlow: Flow<String> = dataStore.data

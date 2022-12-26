@@ -14,6 +14,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -31,7 +32,6 @@ import com.palone.paloneapp.ui.TimetableViewModel
 import com.palone.paloneapp.ui.theme.PaloneAppTheme
 import com.palone.paloneapp.utils.PreferencesProvider.PreferencesProviderImpl
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import kotlin.coroutines.EmptyCoroutineContext
 
 class MainActivity : ComponentActivity() {
@@ -41,11 +41,13 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         val substitutionsViewModel by viewModels<SubstitutionsViewModel>()
         val timetableViewModel by viewModels<TimetableViewModel>()
+
         val scope = CoroutineScope(EmptyCoroutineContext)
         val preferencesProvider = PreferencesProviderImpl(this, scope)
-        scope.launch { Log.i("chujccccc", "dd") }
+//        scope.launch { Log.i("chujccccc", "dd") }
         timetableViewModel.updatePreferencesProvider(preferencesProvider)
         substitutionsViewModel.updatePreferencesProvider(preferencesProvider)
         createNotificationChannel()
@@ -74,10 +76,8 @@ class MainActivity : ComponentActivity() {
             surface = Color(0xFF9B2720), //TEXT COLOR
             onBackground = Color(0xFFF9F1EF)
         )
-
-
         setContent {
-            PaloneAppTheme(colors = colors) {
+            PaloneAppTheme(isSystemDarkTheme = isSystemInDarkTheme()) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background

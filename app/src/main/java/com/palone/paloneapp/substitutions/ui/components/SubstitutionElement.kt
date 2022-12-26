@@ -53,8 +53,8 @@ fun SubstitutionElement(
                 if (substitutionData.className.isNotEmpty())
                     Card(
                         shape = RoundedCornerShape(14.dp),
-                        backgroundColor = MaterialTheme.colors.secondary,
-                        contentColor = MaterialTheme.colors.primaryVariant, modifier = Modifier
+                        backgroundColor = MaterialTheme.colors.surface,
+                        contentColor = MaterialTheme.colors.onBackground, modifier = Modifier
                             .padding(10.dp)
                     ) {
                         Row(

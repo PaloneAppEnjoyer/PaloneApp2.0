@@ -19,8 +19,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -39,9 +42,13 @@ fun TimetableElement(
     currentLesson: Float,
     todayDayInWeek: Int,
     substitutions: List<SubstitutionDataEntry> = emptyList(),
-    areSubstitutionsForTomorrow: Boolean = false
+    areSubstitutionsForTomorrow: Boolean = false,
+    lessonProgress: Float
 ) {
     if (data.isNotEmpty()) {
+        val configuration = LocalConfiguration.current
+        val surfaceColor = MaterialTheme.colors.surface
+        val mainCardHeight = remember { mutableStateOf(0) }
         val isNow =
             data[0].dayInt == todayDayInWeek - 1 && lessonNumber.toFloat() - currentLesson == 0.0f
         val isRightAfter =
@@ -49,7 +56,6 @@ fun TimetableElement(
         val isRightBefore =
             data[0].dayInt == todayDayInWeek - 1 && lessonNumber.toFloat() - currentLesson == 0.5f
         val shouldShowSubstitutions = remember { mutableStateOf(false) }
-
         val bellsPeriods = listOf(
             BellPeriod(0, "07:05", "07:50"),
             BellPeriod(1, "07:55", "08:40"),
@@ -62,15 +68,21 @@ fun TimetableElement(
             BellPeriod(8, "13:55", "14:40"),
             BellPeriod(9, "14:45", "15:30"),
             BellPeriod(10, "15:35", "16:20")
-        )
+        )//todo wrzucić do view model
+
         Card(
             modifier = modifier
                 .fillMaxWidth()
+                .onGloballyPositioned {
+                    if (it.size.height != mainCardHeight.value)
+                        mainCardHeight.value = it.size.height
+                }
                 .clickable(enabled = substitutions.isNotEmpty()) {
                     shouldShowSubstitutions.value = !shouldShowSubstitutions.value
                 }
                 .animateContentSize(),
-            backgroundColor = MaterialTheme.colors.primaryVariant, border = BorderStroke(
+            backgroundColor = MaterialTheme.colors.primaryVariant,
+            border = BorderStroke(
                 3.dp, when {
                     isNow -> Brush.verticalGradient(
                         colors = listOf(
@@ -100,6 +112,17 @@ fun TimetableElement(
                 }
             )
         ) {
+            if (isNow)
+                Box(modifier = Modifier
+                    .drawBehind {
+                        drawRoundRect(
+                            color = surfaceColor, alpha = 0.5f, size = Size(
+                                (lessonProgress * configuration.screenWidthDp.dp.toPx()) / 100,
+                                mainCardHeight.value.toFloat()
+                            )
+                        )
+                    })
+
             Row(modifier = Modifier.padding(15.dp)) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Card(
@@ -186,7 +209,10 @@ fun TimetableElement(
 
                 }
             }
+
         }
+
+
     }
 
 }
@@ -228,30 +254,58 @@ fun TimetableElementContent(
                 )
 
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-            if (vertical)
-                Column {
-                    Text(
-                        text = data.teacherShortName,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colors.primary
-                    )
-                    Text(text = data.classroomsName, fontSize = 17.sp)
-                }
-            else {
+
+        if (vertical)
+            Column {
                 Text(
                     text = data.teacherShortName,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colors.primary
                 )
-                Text(text = data.groupName, color = MaterialTheme.colors.primary)
-                Text(
-                    text = data.classroomsName,
-                    fontSize = 17.sp,
-                    color = MaterialTheme.colors.primary,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                Text(text = data.classroomsName, fontSize = 17.sp)
+            }
+        else {
+            if (isNow) {
+                Card(
+                    shape = RoundedCornerShape(10.dp),
+                    backgroundColor = MaterialTheme.colors.surface
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 6.dp),
+                        horizontalArrangement = Arrangement.spacedBy(5.dp)
+                    ) {
+                        Text(
+                            text = data.teacherShortName,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colors.onBackground
+                        )
+                        Text(text = data.groupName, color = MaterialTheme.colors.onBackground)
+                        Text(
+                            text = data.classroomsName,
+                            fontSize = 17.sp,
+                            color = MaterialTheme.colors.onBackground,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+
+                }
+            } else {
+                Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+                    Text(
+                        text = data.teacherShortName,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colors.primary
+                    )
+                    Text(text = data.groupName, color = MaterialTheme.colors.primary)
+                    Text(
+                        text = data.classroomsName,
+                        fontSize = 17.sp,
+                        color = MaterialTheme.colors.primary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
 
         }

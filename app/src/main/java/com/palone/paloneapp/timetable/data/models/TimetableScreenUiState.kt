@@ -18,5 +18,6 @@ data class TimetableScreenUiState(
         SnackbarHostState()
     ),
     val currentLesson: Float = -1.0f,
+    val currentLessonProgress: Float = -1f,
     val todayDate: DateSystem = DateSystem(1990, 0, 0, "")
 )

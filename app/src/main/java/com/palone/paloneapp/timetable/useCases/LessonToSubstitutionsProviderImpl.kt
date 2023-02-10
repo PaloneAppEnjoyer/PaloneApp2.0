@@ -5,6 +5,7 @@ import com.palone.paloneapp.substitutions.data.models.SubstitutionDataEntry
 import com.palone.paloneapp.utils.between
 
 class LessonToSubstitutionsProviderImpl : LessonToSubstitutionsProvider {
+    //todo refactor pls bo oczy bolą
     override fun getSubstitutionsFromLessonNumber(
         lessonNumber: Int,
         substitutionsList: List<SubstitutionData>,

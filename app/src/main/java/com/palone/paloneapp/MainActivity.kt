@@ -18,7 +18,6 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.darkColors
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
@@ -50,6 +49,7 @@ class MainActivity : ComponentActivity() {
 //        scope.launch { Log.i("chujccccc", "dd") }
         timetableViewModel.updatePreferencesProvider(preferencesProvider)
         substitutionsViewModel.updatePreferencesProvider(preferencesProvider)
+
         createNotificationChannel()
 
         Firebase.messaging.subscribeToTopic("mainTopic")
@@ -68,14 +68,14 @@ class MainActivity : ComponentActivity() {
 //            surface = Color(pref.getLong("surface", 0xFF9B2720)), //TEXT COLOR
 //            onBackground = Color(pref.getLong("onBackground", 0xFFF9F1EF))
 //        )
-        val colors = darkColors(
-            primary = Color(0xFF6F6F6F),
-            primaryVariant = Color(0xFFFCFCFC),//subs elements
-            secondary = Color(0xFF9B2720),
-            background = Color(0xFFF9F1EF),//Light Pink
-            surface = Color(0xFF9B2720), //TEXT COLOR
-            onBackground = Color(0xFFF9F1EF)
-        )
+//        val colors = darkColors(
+//            primary = Color(0xFF6F6F6F),
+//            primaryVariant = Color(0xFFFCFCFC),//subs elements
+//            secondary = Color(0xFF9B2720),
+//            background = Color(0xFFF9F1EF),//Light Pink
+//            surface = Color(0xFF9B2720), //TEXT COLOR
+//            onBackground = Color(0xFFF9F1EF)
+//        )
         setContent {
             PaloneAppTheme(isSystemDarkTheme = isSystemInDarkTheme()) {
                 Surface(

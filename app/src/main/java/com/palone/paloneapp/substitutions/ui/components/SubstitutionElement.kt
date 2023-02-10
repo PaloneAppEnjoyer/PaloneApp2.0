@@ -8,6 +8,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
@@ -17,16 +18,19 @@ import androidx.compose.ui.unit.sp
 import com.palone.paloneapp.substitutions.data.models.SubstitutionData
 import kotlinx.datetime.LocalDate
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SubstitutionElement(
+    modifier: Modifier = Modifier,
     substitutionData: SubstitutionData,
     currentDay: LocalDate,
     shouldShowPaloneWatermark: Boolean,
     onLongPress: () -> Unit = {}
 ) {
+
     Card(
         shape = RoundedCornerShape(10.dp),
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth(),
         backgroundColor = MaterialTheme.colors.primaryVariant,
         contentColor = MaterialTheme.colors.secondary

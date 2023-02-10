@@ -132,7 +132,7 @@ class SubstitutionsViewModel : MainViewModel() {
     }
 
 
-    init {
+    override fun initializer() {//TODO zrobić dependency injection i wsadzić preferences provider jako argument
 
         val todayTimeManager = timeManager.getCurrentDate()
         val todayLocalDate = LocalDate(

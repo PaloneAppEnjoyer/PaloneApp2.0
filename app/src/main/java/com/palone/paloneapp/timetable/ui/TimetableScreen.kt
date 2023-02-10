@@ -115,7 +115,9 @@ fun TimetableScreen(viewModel: TimetableViewModel, navHostController: NavHostCon
                             }
                             val substitutions =
                                 viewModel.getSubstitutionsForSelectedLesson(scope.lessonNumber)
-                                    .filter {
+                                    .collectAsState(
+                                        initial = emptyList()
+                                    ).value.filter {
                                         data.any { it2 ->
                                             it.subject.contains(
                                                 it2.groupName.replace(".", "")
@@ -130,7 +132,8 @@ fun TimetableScreen(viewModel: TimetableViewModel, navHostController: NavHostCon
                                 currentLesson = viewModel.uiState.collectAsState().value.currentLesson,
                                 todayDayInWeek = calendarTodayDayOfWeek.value,
                                 substitutions = substitutions,
-                                areSubstitutionsForTomorrow = viewModel.uiState.collectAsState().value.selectedDay != viewModel.uiState.collectAsState().value.todayDate.day_of_week_name
+                                areSubstitutionsForTomorrow = viewModel.uiState.collectAsState().value.selectedDay != viewModel.uiState.collectAsState().value.todayDate.day_of_week_name,
+                                lessonProgress = viewModel.uiState.collectAsState().value.currentLessonProgress
                             )
                         }
                     }

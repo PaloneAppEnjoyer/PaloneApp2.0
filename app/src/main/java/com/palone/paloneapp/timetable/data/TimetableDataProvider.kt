@@ -1,5 +1,6 @@
 package com.palone.paloneapp.timetable.data
 
+import android.util.Log
 import com.palone.paloneapp.timetable.data.models.TimetableData
 import com.palone.paloneapp.timetable.domain.timetableDataManager.TimetableDataManager
 import com.palone.paloneapp.utils.timetableDataResponseToListOfTimetableDataParser.TimetableDataResponseToListOfTimetableDataParserInterface
@@ -14,6 +15,7 @@ class TimetableDataProvider {
     ): Flow<List<TimetableData>> =
         flow {
             try {
+                Log.i("Emiting json", "hyh")
                 emit(
                     timetableDataManager.getTimetableDataFromLocalJsonFile(
                         filePath,
@@ -31,6 +33,7 @@ class TimetableDataProvider {
                         filePath,
                         "latest_timetable_data.json"
                     )
+                    Log.i("Emiting po update", "hyh")
                     emit(
                         timetableDataManager.getTimetableDataFromLocalJsonFile(
                             filePath,

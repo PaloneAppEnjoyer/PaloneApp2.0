@@ -54,8 +54,8 @@ fun SubstitutionsScreen(viewModel: SubstitutionsViewModel, navHostController: Na
         composableToBitmap {
             SubstitutionElement(
                 substitutionData = substitutionDataFilament.value,
-                viewModel.uiState.collectAsState().value.selectedLocalDate,
-                true
+                currentDay = viewModel.uiState.collectAsState().value.selectedLocalDate,
+                shouldShowPaloneWatermark = true
             )
         }
 
@@ -157,8 +157,9 @@ fun SubstitutionsScreen(viewModel: SubstitutionsViewModel, navHostController: Na
                                         teacherReplacement = "Brak informacji. Jeśli masz pewność, że nowe dostępstwa już są dostępne - sprawdź ustawienia filtra"
                                     )
                                 )
-                            ), viewModel.uiState.collectAsState().value.selectedLocalDate,
-                            false
+                            ),
+                            currentDay = viewModel.uiState.collectAsState().value.selectedLocalDate,
+                            shouldShowPaloneWatermark = false
                         )
                     viewModel.uiState.collectAsState().value.filteredSubstitutionsList?.forEach {
                         AnimatedContent(
@@ -166,8 +167,8 @@ fun SubstitutionsScreen(viewModel: SubstitutionsViewModel, navHostController: Na
                             transitionSpec = { scaleIn() with fadeOut() }) { scope ->
                             SubstitutionElement(
                                 substitutionData = scope,
-                                viewModel.uiState.collectAsState().value.selectedLocalDate,
-                                false
+                                currentDay = viewModel.uiState.collectAsState().value.selectedLocalDate,
+                                shouldShowPaloneWatermark = false
                             ) {
                                 substitutionDataFilament.value = scope
                                 viewModel.onLongPressShare(

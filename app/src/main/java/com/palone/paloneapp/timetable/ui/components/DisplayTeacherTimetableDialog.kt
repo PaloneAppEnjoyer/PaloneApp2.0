@@ -89,7 +89,8 @@ fun DisplayTeacherTimetableDialog(data: List<TimetableData>, onDismissRequest: (
                         lessonNumber = i,
                         showSchoolClass = true,
                         currentLesson = -1.0f,
-                        todayDayInWeek = calendarTodayDayOfWeek.value
+                        todayDayInWeek = calendarTodayDayOfWeek.value,
+                        lessonProgress = 0f
                     )
                 }
             }

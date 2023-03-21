@@ -7,7 +7,7 @@ import androidx.compose.material.SnackbarHostState
 import com.palone.paloneapp.data.models.DateSystem
 
 data class TimetableScreenUiState(
-    val selectedSchoolClass: String = "4ftg",
+    val selectedSchoolClass: String = "",
     val hiddenGroups: List<String> = emptyList(),
     val selectedDay: String = "Pn",
     val isLoading: Boolean = false,
@@ -18,5 +18,6 @@ data class TimetableScreenUiState(
         SnackbarHostState()
     ),
     val currentLesson: Float = -1.0f,
+    val currentLessonProgress: Float = -1f,
     val todayDate: DateSystem = DateSystem(1990, 0, 0, "")
 )

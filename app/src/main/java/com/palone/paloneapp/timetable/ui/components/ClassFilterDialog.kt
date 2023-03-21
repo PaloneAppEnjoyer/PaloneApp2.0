@@ -21,8 +21,8 @@ fun ClassFilterDialog(viewModel: TimetableViewModel, onDismissRequest: () -> Uni
     Dialog(onDismissRequest = onDismissRequest) {
         Card(
             modifier = Modifier.fillMaxSize(),
-            backgroundColor = MaterialTheme.colors.primary,
-            contentColor = MaterialTheme.colors.background
+            backgroundColor = MaterialTheme.colors.primaryVariant,
+            contentColor = MaterialTheme.colors.onPrimary
         ) {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 viewModel.getAllSchoolClassesNames().sortedBy { it }.forEach { schoolClassName ->

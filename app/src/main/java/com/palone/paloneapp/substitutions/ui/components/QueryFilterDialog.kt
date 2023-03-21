@@ -1,8 +1,6 @@
 package com.palone.paloneapp.substitutions.ui.substitutions_screen
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,22 +17,22 @@ import com.palone.paloneapp.ui.SubstitutionsViewModel
 fun QueryFilterDialog(viewModel: SubstitutionsViewModel) {
     Dialog(onDismissRequest = { viewModel.hideTextFilterDialog() }) {
 
-        Box(
-            Modifier.background(
-                color = MaterialTheme.colors.background,
-                shape = RoundedCornerShape(10.dp)
-            )
+        Card(
+            backgroundColor = MaterialTheme.colors.background,
+            shape = RoundedCornerShape(10.dp),
+            contentColor = MaterialTheme.colors.onPrimary
         ) {
             Column(
+                modifier = Modifier.padding(10.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
+                Text(text = "Filtruj po klasie:", modifier = Modifier.padding(bottom = 5.dp))
                 TextField(
                     value = viewModel.uiState.collectAsState().value.classFilter,
-                    onValueChange = { viewModel.updateTextFilter(it);viewModel.refreshFilteredSubstitutionsWithQuery() },
-                    colors = TextFieldDefaults.textFieldColors(backgroundColor = MaterialTheme.colors.secondary),
-                    modifier = Modifier.padding(10.dp)
-                )
+                    onValueChange = { viewModel.updateClassFilter(it);viewModel.refreshFilteredSubstitutionsWithQuery() },
+
+                    )
                 Button(
                     onClick = { viewModel.hideTextFilterDialog() },
                     modifier = Modifier.padding(bottom = 10.dp),

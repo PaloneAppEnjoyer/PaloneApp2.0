@@ -20,7 +20,7 @@ fun TopBar(
 ) {
     val scope = rememberCoroutineScope()
     Card(
-        backgroundColor = MaterialTheme.colors.secondary,
+        backgroundColor = MaterialTheme.colors.surface,
         modifier = Modifier
             .height(50.dp)
             .fillMaxWidth(),

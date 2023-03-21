@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken
 import com.palone.paloneapp.timetable.data.TimetableDataProvider
 import com.palone.paloneapp.timetable.data.models.TimetableData
 import com.palone.paloneapp.utils.timetableDataResponseToListOfTimetableDataParser.TimetableDataResponseToListOfTimetableDataParserInterface
+import kotlinx.coroutines.flow.Flow
 import java.io.File
 import java.io.FileReader
 
@@ -12,7 +13,7 @@ class TimetableDataManagerImpl : TimetableDataManager {
     override suspend fun getTimetableData(
         filePath: String,
         timetableDataParser: TimetableDataResponseToListOfTimetableDataParserInterface
-    ): List<TimetableData> {
+    ): Flow<List<TimetableData>> {
         return TimetableDataProvider().getTimetableData(filePath, this, timetableDataParser)
     }
 

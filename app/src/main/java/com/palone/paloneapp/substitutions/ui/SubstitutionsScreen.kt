@@ -30,7 +30,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.himanshoe.kalendar.Kalendar
 import com.himanshoe.kalendar.color.KalendarThemeColor
 import com.himanshoe.kalendar.model.KalendarType
-import com.palone.paloneapp.substitutions.data.ScreensProperties
+import com.palone.paloneapp.data.ScreensProperties
 import com.palone.paloneapp.substitutions.data.models.SubstitutionData
 import com.palone.paloneapp.substitutions.data.models.SubstitutionDataEntry
 import com.palone.paloneapp.substitutions.ui.substitutions_screen.QueryFilterDialog
@@ -40,6 +40,7 @@ import com.palone.paloneapp.ui.components.DrawerItem
 import com.palone.paloneapp.ui.components.MainFloatingActionButton
 import com.palone.paloneapp.ui.components.TopBar
 import com.palone.paloneapp.utils.composableToBitmap
+import com.palone.paloneapp.utils.shareAImage
 
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -50,7 +51,13 @@ fun SubstitutionsScreen(viewModel: SubstitutionsViewModel, navHostController: Na
         mutableStateOf(SubstitutionData("", emptyList()))
     }
     val bitmapFromComposable =
-        composableToBitmap { SubstitutionElement(substitutionData = substitutionDataFilament.value) }
+        composableToBitmap {
+            SubstitutionElement(
+                substitutionData = substitutionDataFilament.value,
+                currentDay = viewModel.uiState.collectAsState().value.selectedLocalDate,
+                shouldShowPaloneWatermark = true
+            )
+        }
 
     Scaffold(
         scaffoldState = viewModel.uiState.collectAsState().value.scaffoldState,
@@ -97,7 +104,7 @@ fun SubstitutionsScreen(viewModel: SubstitutionsViewModel, navHostController: Na
                     kalendarType = KalendarType.Oceanic,
                     kalendarThemeColor = KalendarThemeColor(
                         MaterialTheme.colors.primaryVariant,
-                        MaterialTheme.colors.secondary,
+                        MaterialTheme.colors.surface,
                         MaterialTheme.colors.secondary
                     ),
                     onCurrentDayClick = { kalendarDay, _ ->
@@ -150,15 +157,24 @@ fun SubstitutionsScreen(viewModel: SubstitutionsViewModel, navHostController: Na
                                         teacherReplacement = "Brak informacji. Jeśli masz pewność, że nowe dostępstwa już są dostępne - sprawdź ustawienia filtra"
                                     )
                                 )
-                            )
+                            ),
+                            currentDay = viewModel.uiState.collectAsState().value.selectedLocalDate,
+                            shouldShowPaloneWatermark = false
                         )
                     viewModel.uiState.collectAsState().value.filteredSubstitutionsList?.forEach {
                         AnimatedContent(
                             targetState = it,
                             transitionSpec = { scaleIn() with fadeOut() }) { scope ->
-                            SubstitutionElement(substitutionData = scope) {
+                            SubstitutionElement(
+                                substitutionData = scope,
+                                currentDay = viewModel.uiState.collectAsState().value.selectedLocalDate,
+                                shouldShowPaloneWatermark = false
+                            ) {
                                 substitutionDataFilament.value = scope
-                                viewModel.onLongPressShare(bitmapFromComposable, localContext)
+                                viewModel.onLongPressShare(
+                                    bitmapFromComposable,
+                                    localContext,
+                                    shareImage = { shareAImage(localContext) })
                             }
                         }
                     }

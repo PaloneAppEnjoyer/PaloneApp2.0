@@ -10,11 +10,19 @@ import java.util.*
 class TimetableRemoteDataProvider {
     suspend fun getRemoteTtViewerData(): TtViewerRemoteDataResponse {
         return try {
-            RetrofitInstance.api.getTtViewerData(
+            var data = RetrofitInstance.api.getTtViewerData(
                 """{"__args":[null,${
                     Calendar.getInstance().get(Calendar.YEAR)
                 }],"__gsh":"00000000"}""".toRequestBody()
             )
+            if (data.response?.regular?.default_num == "") {
+                data = RetrofitInstance.api.getTtViewerData(
+                    """{"__args":[null,${
+                        Calendar.getInstance().get(Calendar.YEAR) - 1
+                    }],"__gsh":"00000000"}""".toRequestBody()
+                )
+            }
+            data
         } catch (e: Exception) {
             TtViewerRemoteDataResponse(response = null)
         }

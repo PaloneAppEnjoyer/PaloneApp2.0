@@ -12,8 +12,8 @@ android {
         applicationId "com.palone.paloneapp"
         minSdk 23
         targetSdk 33
-        versionCode 42
-        versionName "1.42 aka 2.0"
+        versionCode 49
+        versionName "1.49 v 2.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -52,6 +52,8 @@ android {
 
 dependencies {
     def work_version = "2.7.1"
+
+    //gson
     implementation 'com.google.code.gson:gson:2.10'
     //swipe refresh
     implementation 'com.google.accompanist:accompanist-swiperefresh:0.27.0'

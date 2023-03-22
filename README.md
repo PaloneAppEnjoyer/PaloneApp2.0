@@ -1,4 +1,5 @@
 # PaloneApp 2.0
+A School App project that displays timetable and substitutions from school's API in intuitive and useful way.
 Already over 350 downloads!
 https://play.google.com/store/apps/details?id=com.palone.paloneapp&hl=en
 

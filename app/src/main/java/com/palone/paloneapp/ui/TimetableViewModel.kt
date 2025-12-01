@@ -124,12 +124,9 @@ class TimetableViewModel(private val lessonToSubstitutionsProvider: LessonToSubs
             .filter { it.className == _uiState.value.selectedSchoolClass }.forEach {
                 it.day.filter { it2 -> it2.dayNameShorted == _uiState.value.selectedDay }
                     .forEach { it2 ->
-                        Log.i("HEY", "1")
-
                         return it2.lessons
                     }
             }
-        Log.i("HEY", "2")
         return emptyList()
     }
 

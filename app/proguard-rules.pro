@@ -22,3 +22,4 @@
 -keep public class com.palone.paloneapp.models.** {*;}
 -keep public class com.palone.paloneapp.network.** {*;}
 -keep public class com.palone.** {*;}
+-dontwarn kotlinx.serialization.**

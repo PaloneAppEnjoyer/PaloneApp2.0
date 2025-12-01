@@ -33,7 +33,6 @@ class TimetableDataProvider {
                         filePath,
                         "latest_timetable_data.json"
                     )
-                    Log.i("Emiting po update", "hyh")
                     emit(
                         timetableDataManager.getTimetableDataFromLocalJsonFile(
                             filePath,

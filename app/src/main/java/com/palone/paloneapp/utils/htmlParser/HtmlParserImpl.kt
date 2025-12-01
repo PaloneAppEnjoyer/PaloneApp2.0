@@ -1,5 +1,6 @@
 package com.palone.paloneapp.utils.htmlParser
 
+import android.util.Log
 import com.palone.paloneapp.substitutions.data.models.SubstitutionData
 import com.palone.paloneapp.substitutions.data.models.SubstitutionDataEntry
 

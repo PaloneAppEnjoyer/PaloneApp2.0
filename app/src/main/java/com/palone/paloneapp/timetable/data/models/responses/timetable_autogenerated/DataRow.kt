@@ -73,7 +73,7 @@ data class DataRow(
     val seminargroup: Any,
     val settings: Settings,
     val sharedroom: Boolean,
-    val short: String,
+    val short: String?,
     val splitpage_h: Int,
     val splitpage_w: Int,
     val starttime: String,

@@ -6,26 +6,25 @@ plugins {
 
 android {
 
-    compileSdk 33
+    compileSdk 35
 
     defaultConfig {
         applicationId "com.palone.paloneapp"
         minSdk 23
-        targetSdk 33
-        versionCode 49
-        versionName "1.49 v 2.1"
+        targetSdk 35
+        versionCode 52
+        versionName "1.52"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary true
         }
         signingConfig signingConfigs.debug
-
     }
 
     buildTypes {
         release {
-            minifyEnabled true   // Obfuscate and minify codes
+            minifyEnabled false   // Obfuscate and minify codes
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -48,6 +47,7 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
+    namespace 'com.palone.paloneapp'
 }
 
 dependencies {

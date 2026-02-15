@@ -1,5 +1,6 @@
 package com.palone.paloneapp.timetable.ui
 
+import android.app.Activity
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.*
@@ -13,13 +14,17 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.NavHostController
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -35,6 +40,18 @@ import java.util.*
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun TimetableScreen(viewModel: TimetableViewModel, navHostController: NavHostController) {
+    val context = LocalContext.current
+    val colors = MaterialTheme.colors
+
+    SideEffect {
+        val window = (context as Activity).window
+
+        window.navigationBarColor = colors.background.toArgb()
+
+        WindowInsetsControllerCompat(window, window.decorView).apply {
+            isAppearanceLightNavigationBars = colors.isLight
+        }
+    }
     val shouldShowSchoolClassFilterDialog =
         remember { mutableStateOf(viewModel.uiState.value.selectedSchoolClass == "") }
     val calendarTodayDayOfWeek = remember {
@@ -64,6 +81,10 @@ fun TimetableScreen(viewModel: TimetableViewModel, navHostController: NavHostCon
     Scaffold(
         drawerBackgroundColor = MaterialTheme.colors.background,
         drawerContentColor = MaterialTheme.colors.secondary,
+        modifier = Modifier
+            .fillMaxSize()
+            .navigationBarsPadding()
+            .statusBarsPadding(),
         scaffoldState = viewModel.uiState.collectAsState().value.scaffoldState,
         drawerContent = {
             DrawerItem(

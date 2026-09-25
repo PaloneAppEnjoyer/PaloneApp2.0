@@ -118,9 +118,9 @@ class MainActivity : ComponentActivity() {
             ActivityResultContracts.RequestPermission()
         ) { isGranted: Boolean ->
             if (isGranted) {
-                Log.i("JEst git, premisja też jest", "true")
+                Log.i("permission granted", "true")
             } else {
-                Log.i("nie JEst git, premisja też jest zjebana", "smutne:c")
+                Log.i("permission denied", "false")
 
             }
         }

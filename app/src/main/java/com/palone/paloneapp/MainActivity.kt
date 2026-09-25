@@ -46,7 +46,6 @@ class MainActivity : ComponentActivity() {
 
         val scope = CoroutineScope(EmptyCoroutineContext)
         val preferencesProvider = PreferencesProviderImpl(this, scope)
-//        scope.launch { Log.i("chujccccc", "dd") }
         timetableViewModel.updatePreferencesProvider(preferencesProvider)
         substitutionsViewModel.updatePreferencesProvider(preferencesProvider)
 
@@ -60,22 +59,6 @@ class MainActivity : ComponentActivity() {
                 }
                 Log.i("subscription status", msg)
             }
-//        val colors = darkColors(
-//            primary = Color(pref.getLong("primary", 0xFF6F6F6F)),
-//            primaryVariant = Color(pref.getLong("primaryVariant", 0xFFFCFCFC)),//subs elements
-//            secondary = Color(pref.getLong("secondary", 0xFF9B2720)),
-//            background = Color(pref.getLong("background", 0xFFF9F1EF)),//Light Pink
-//            surface = Color(pref.getLong("surface", 0xFF9B2720)), //TEXT COLOR
-//            onBackground = Color(pref.getLong("onBackground", 0xFFF9F1EF))
-//        )
-//        val colors = darkColors(
-//            primary = Color(0xFF6F6F6F),
-//            primaryVariant = Color(0xFFFCFCFC),//subs elements
-//            secondary = Color(0xFF9B2720),
-//            background = Color(0xFFF9F1EF),//Light Pink
-//            surface = Color(0xFF9B2720), //TEXT COLOR
-//            onBackground = Color(0xFFF9F1EF)
-//        )
         setContent {
             PaloneAppTheme(isSystemDarkTheme = isSystemInDarkTheme()) {
                 Surface(

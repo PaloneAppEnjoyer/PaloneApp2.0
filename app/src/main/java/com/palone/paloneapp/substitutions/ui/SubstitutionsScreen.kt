@@ -1,5 +1,6 @@
 package com.palone.paloneapp.substitutions.ui
 
+import android.app.Activity
 import android.util.Log
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
@@ -11,6 +12,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,9 +22,12 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.NavHostController
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
@@ -50,6 +55,19 @@ fun SubstitutionsScreen(viewModel: SubstitutionsViewModel, navHostController: Na
     val substitutionDataFilament = remember {
         mutableStateOf(SubstitutionData("", emptyList()))
     }
+    val context = LocalContext.current
+    val colors = MaterialTheme.colors
+
+    SideEffect {
+        val window = (context as Activity).window
+
+        window.navigationBarColor = colors.background.toArgb()
+
+        WindowInsetsControllerCompat(window, window.decorView).apply {
+            isAppearanceLightNavigationBars = colors.isLight
+        }
+    }
+
     val bitmapFromComposable =
         composableToBitmap {
             SubstitutionElement(
@@ -61,7 +79,11 @@ fun SubstitutionsScreen(viewModel: SubstitutionsViewModel, navHostController: Na
 
     Scaffold(
         scaffoldState = viewModel.uiState.collectAsState().value.scaffoldState,
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .navigationBarsPadding()
+            .statusBarsPadding(),
+
         drawerContent = {
             DrawerItem(
                 title = "Opcje",
@@ -187,5 +209,3 @@ fun SubstitutionsScreen(viewModel: SubstitutionsViewModel, navHostController: Na
         QueryFilterDialog(viewModel = viewModel)
 
 }
-
-

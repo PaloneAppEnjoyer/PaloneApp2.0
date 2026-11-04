@@ -124,7 +124,7 @@ class TimetableDataResponseToListOfTimetableDataParserImpl :
                             mapClasses.find { it2 -> it2.id == it.classid } ?: SchoolClass(
                                 "9999",
                                 "Brak klasy"
-                            ), divisionId = it.divisionid
+                            ), divisionId = it.divisionid ?: "Division id unavailable"
                         )
                     )
                 }

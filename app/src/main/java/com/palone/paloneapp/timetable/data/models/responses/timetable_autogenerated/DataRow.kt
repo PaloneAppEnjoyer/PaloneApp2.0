@@ -27,7 +27,7 @@ data class DataRow(
     val daydata: Daydata,
     val days: String,
     val daysdefid: String,
-    val divisionid: String,
+    val divisionid: String?,
     val durationperiods: Int,
     val endtime: String,
     val entireclass: Boolean,

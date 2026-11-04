@@ -14,8 +14,12 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
@@ -29,6 +33,7 @@ import com.palone.paloneapp.ui.PaloneApp
 import com.palone.paloneapp.ui.SubstitutionsViewModel
 import com.palone.paloneapp.ui.TimetableViewModel
 import com.palone.paloneapp.ui.theme.PaloneAppTheme
+import com.palone.paloneapp.ui.theme.StatusBarBackground
 import com.palone.paloneapp.utils.PreferencesProvider.PreferencesProviderImpl
 import kotlinx.coroutines.CoroutineScope
 import kotlin.coroutines.EmptyCoroutineContext
@@ -61,14 +66,21 @@ class MainActivity : ComponentActivity() {
             }
         setContent {
             PaloneAppTheme(isSystemDarkTheme = isSystemInDarkTheme()) {
+                // Android 15+ draws the app behind the system bars and ignores statusBarColor,
+                // so the bars have to be reserved here for every screen and the drawer.
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(StatusBarBackground)
+                        .statusBarsPadding(),
                     color = MaterialTheme.colors.background
                 ) {
-                    PaloneApp(
-                        substitutionsViewModel = substitutionsViewModel,
-                        timetableViewModel = timetableViewModel
-                    )
+                    Box(modifier = Modifier.navigationBarsPadding()) {
+                        PaloneApp(
+                            substitutionsViewModel = substitutionsViewModel,
+                            timetableViewModel = timetableViewModel
+                        )
+                    }
                 }
             }
         }

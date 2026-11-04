@@ -40,7 +40,7 @@ A parser joins the timetable tables into entries a student can read, and a secon
 
 ## Building
 
-Open the project in Android Studio and run the `app` configuration. The app reads data from my school's EduPage (`elektryk.edupage.org`), so the timetable only loads while that site serves it.
+The Firebase config is not in the repository. To build, create your own Firebase project for the package `com.palone.paloneapp`, download its `google-services.json` into `app/`, then open the project in Android Studio and run the `app` configuration. The app reads data from my school's EduPage (`elektryk.edupage.org`), so the timetable only loads while that site serves it.
 
 ## What I would do differently today
 
